@@ -176,6 +176,95 @@ void Shapes::checkErrorShader(GLuint shader) {
 	}
 }
 
+BoundingBox::BoundingBox(Shapes shape) {
+	vector<float> v1 = shape.vertexPositions;
+	float max_x = -10000.0f, min_x = 10000.0f, max_y = -10000.0f, min_y = 10000.0f, max_z = -10000.0f, min_z = 10000.0f;
+	//printf("%d", v1.size());
+	for (int i = 0; i < v1.size(); i += 3) {
+		int k = i + 1, j = i + 2;
+		float x = v1[i], y = v1[k], z = v1[j];
+		//printf("------\n%f\n", x);
+		if (x > max_x) {
+			max_x = x;
+		}
+		if (x < min_x) {
+			min_x = x;
+		}
+		if (y > max_y) {
+			max_y = y;
+		}
+		if (y < min_y) {
+			min_y = y;
+		}
+		if (z > max_z) {
+			max_z = z;
+		}
+		if (z < min_z) {
+			min_z = z;
+		}
+	}
+	min = glm::vec3(min_x, min_y, min_z);
+	max = glm::vec3(max_x, max_y, max_z);
+
+	LoadObj();
+}
+
+BoundingBox::BoundingBox() {
+	// Exported from Blender a cube by default (OBJ File)
+	rawData = R"(
+v 0.500000 -0.500000 -0.500000
+v 0.500000 -0.500000 0.500000
+v -0.500000 -0.500000 0.500000
+v -0.500000 -0.500000 -0.500000
+v 0.500000 0.500000 -0.499999
+v 0.499999 0.500000 0.500000
+v -0.500000 0.500000 0.500000
+v -0.500000 0.500000 -0.500000
+f 1 3 4
+f 8 6 5
+f 5 2 1
+f 6 3 2
+f 7 4 3
+f 1 8 5
+f 1 2 3
+f 8 7 6
+f 5 6 2
+f 6 7 3
+f 7 8 4
+f 1 4 8)";
+
+	LoadObj();
+}
+
+BoundingBox::~BoundingBox() {
+
+}
+
+void Collidable::Translate(Graphics graphics, glm::vec3 t) {
+	glm::mat4 mv_matrix =
+		glm::translate(t) *
+		glm::mat4(1.0f);
+
+	this->mv_matrix = graphics.viewMatrix * mv_matrix;
+	this->proj_matrix = graphics.proj_matrix;
+
+	boundingBox.mv_matrix = graphics.viewMatrix * mv_matrix;
+	boundingBox.proj_matrix = graphics.proj_matrix;
+
+	boundingBox.min = boundingBox.min + t;
+	boundingBox.max = boundingBox.max + t;
+
+	boundingBox.fillColor = glm::vec4(0.68f, 0.85f, 0.9f, 0.5f);
+}
+
+void Collidable::Rotate(Graphics graphics, float r, glm::vec3 t) {
+
+}
+
+void Collidable::Scale(Graphics graphics, glm::vec3 t) {
+
+}
+
 Cube::Cube() {
 	// Exported from Blender a cube by default (OBJ File)
 	rawData = R"(
@@ -201,6 +290,7 @@ f 7 8 4
 f 1 4 8)";
 
 	LoadObj();
+	this->boundingBox = BoundingBox(*this);
 }
 
 Cube::~Cube() {
@@ -706,6 +796,7 @@ f 83/108/100 82/114/100 90/11/100
 )";
 
 	LoadObj();
+	this->boundingBox = BoundingBox(*this);
 }
 
 Sphere::~Sphere() {
@@ -837,6 +928,7 @@ f 40 16 32
 )";
 
 	LoadObj();
+	this->boundingBox = BoundingBox(*this);
 }
 
 Arrow::~Arrow() {
@@ -962,6 +1054,7 @@ f 3/38/12 7/25/12 15/27/12
 )";
 
 	LoadObj();
+	this->boundingBox = BoundingBox(*this);
 }
 
 Cylinder::~Cylinder() {
@@ -1011,6 +1104,7 @@ f 6/9/4 2/14/4 1/10/4
 )";
 
 	LoadObj();
+	this->boundingBox = BoundingBox(*this);
 }
 
 Line::~Line() {

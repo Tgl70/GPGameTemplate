@@ -7,6 +7,8 @@ using namespace std;
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
+#include "graphics.h"
+#include <glm/gtx/transform.hpp>
 
 class Shapes {
 
@@ -16,7 +18,7 @@ public:
 
 	void Load();
 	void Draw();
-	void  checkErrorShader(GLuint shader);
+	void checkErrorShader(GLuint shader);
 
 	vector<GLfloat> vertexPositions;
 
@@ -38,31 +40,49 @@ protected:
 	void LoadObj();
 };
 
-class Cube : public Shapes {
+class BoundingBox : public Shapes {
+public:
+	BoundingBox(Shapes shape);
+	BoundingBox();
+	~BoundingBox();
+	glm::vec3 min;
+	glm::vec3 max;
+};
+
+class Collidable : public Shapes {
+public:
+	void Translate(Graphics graphics, glm::vec3 t);
+	void Rotate(Graphics graphics, float r, glm::vec3 t);
+	void Scale(Graphics graphics, glm::vec3 t);
+
+	BoundingBox boundingBox;
+};
+
+class Cube : public Collidable {
 public:
 	Cube();
 	~Cube();
 };
 
-class Sphere : public Shapes {
+class Sphere : public Collidable {
 public:
 	Sphere();
 	~Sphere();
 };
 
-class Arrow : public Shapes {
+class Arrow : public Collidable {
 public:
 	Arrow();
 	~Arrow();
 };
 
-class Cylinder : public Shapes {
+class Cylinder : public Collidable {
 public:
 	Cylinder();
 	~Cylinder();
 };
 
-class Line : public Shapes {
+class Line : public Collidable {
 public:
 	Line();
 	~Line();

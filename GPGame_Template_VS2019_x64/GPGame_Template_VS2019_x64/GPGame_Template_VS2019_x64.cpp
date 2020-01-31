@@ -58,6 +58,10 @@ Cube        myFloor;
 Line        myLine;
 Cylinder    myCylinder;
 
+// MY OBJECTS
+const int L = 20; // Number of cubes per side in the border
+Cube border[L*4-4];
+
 // Some global variable to do the animation.
 float t = 0.001f;            // Global variable for animation
 
@@ -119,6 +123,7 @@ void startup() {
 	myCube.Load();
 
 	mySphere.Load();
+	mySphere.boundingBox.Load();
 	mySphere.fillColor = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);    // You can change the shape fill colour, line colour or linewidth
 
 	arrowX.Load(); arrowY.Load(); arrowZ.Load();
@@ -138,6 +143,14 @@ void startup() {
 	myLine.fillColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
 	myLine.lineColor = glm::vec4(0.2f, 0.2f, 0.2f, 1.0f);
 	myLine.lineWidth = 5.0f;
+
+	// MY OBJECTS
+	for (int i = 0; i < L * 4 - 4; i++) {
+		Cube cube;
+		cube.Load();
+		cube.boundingBox.Load();
+		border[i] = cube;
+	}
 
 	// Optimised Graphics
 	myGraphics.SetOptimisations();        // Cull and depth testing
@@ -206,13 +219,14 @@ void updateSceneElements() {
 	myCube.proj_matrix = myGraphics.proj_matrix;
 
 	// calculate Sphere movement
-	glm::mat4 mv_matrix_sphere =
-		glm::translate(glm::vec3(-2.0f, 0.5f, 0.0f)) *
-		glm::rotate(-t, glm::vec3(0.0f, 1.0f, 0.0f)) *
-		glm::rotate(-t, glm::vec3(1.0f, 0.0f, 0.0f)) *
-		glm::mat4(1.0f);
-	mySphere.mv_matrix = myGraphics.viewMatrix * mv_matrix_sphere;
-	mySphere.proj_matrix = myGraphics.proj_matrix;
+	//glm::mat4 mv_matrix_sphere =
+		//glm::translate(glm::vec3(-2.0f, 2.5f, 0.0f)) *
+		//glm::rotate(-t, glm::vec3(0.0f, 1.0f, 0.0f)) *
+		//glm::rotate(-t, glm::vec3(1.0f, 0.0f, 0.0f)) *
+		//glm::mat4(1.0f);
+	//mySphere.mv_matrix = myGraphics.viewMatrix * mv_matrix_sphere;
+	//mySphere.proj_matrix = myGraphics.proj_matrix;
+	mySphere.Translate(myGraphics, glm::vec3(-2.0f, 2.5f, 0.0f));
 
 	//Calculate Arrows translations (note: arrow model points up)
 	glm::mat4 mv_matrix_x =
@@ -258,6 +272,35 @@ void updateSceneElements() {
 		glm::mat4(1.0f);
 	myLine.proj_matrix = myGraphics.proj_matrix;
 
+	// MY OBJECTS
+		
+	int gap = 1;
+	for (int i = 0; i < L * 4 - 4; i++) {
+		// Bottom border
+		if (i < L) {
+			border[i].Translate(myGraphics, glm::vec3(0.0f + gap * i, 0.5f, 0.0f));
+			border[i].fillColor = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
+		}
+		// Left border
+		else if (i < L * 2 - 2) {
+			border[i].Translate(myGraphics, glm::vec3(0.0f + (L - 1) * gap, 0.5f, 0.0f + gap * (i - L + 1)));
+			border[i].fillColor = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
+		}
+		// Top border
+		else if (i < L * 3 - 2) {
+			border[i].Translate(myGraphics, glm::vec3(0.0f + gap * (i - L * 2 + 2), 0.5f, 0.0f + gap * (L - 1)));
+			border[i].fillColor = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);
+		}
+		// Right border
+		else {
+			border[i].Translate(myGraphics, glm::vec3(0.0f, 0.5f, 0.0f + gap * (i - L * 3 + 3)));
+			border[i].fillColor = glm::vec4(0.5f, 0.5f, 0.5f, 1.0f);
+		}
+	}
+	
+	
+	
+
 
 	t += 0.01f; // increment movement variable
 
@@ -272,15 +315,22 @@ void renderScene() {
 
 	// Draw objects in screen
 	myFloor.Draw();
-	myCube.Draw();
+	//myCube.Draw();
 	mySphere.Draw();
+	mySphere.boundingBox.Draw();
 
-	arrowX.Draw();
-	arrowY.Draw();
-	arrowZ.Draw();
+	//arrowX.Draw();
+	//arrowY.Draw();
+	//arrowZ.Draw();
 
-	myLine.Draw();
-	myCylinder.Draw();
+	//myLine.Draw();
+	//myCylinder.Draw();
+
+	// MY OBJECTS
+	for (int i = 0; i < L * 4 - 4; i++) {
+		border[i].Draw();
+		border[i].boundingBox.Draw();
+	}
 }
 
 
