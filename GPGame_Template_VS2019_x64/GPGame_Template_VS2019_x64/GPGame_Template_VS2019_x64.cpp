@@ -154,7 +154,6 @@ void startup() {
 
 	// Optimised Graphics
 	myGraphics.SetOptimisations();        // Cull and depth testing
-
 }
 
 void updateCamera() {
@@ -226,8 +225,7 @@ void updateSceneElements() {
 		//glm::mat4(1.0f);
 	//mySphere.mv_matrix = myGraphics.viewMatrix * mv_matrix_sphere;
 	//mySphere.proj_matrix = myGraphics.proj_matrix;
-	mySphere.Translate(myGraphics, glm::vec3(-2.0f, 2.5f, 0.0f));
-
+	
 	//Calculate Arrows translations (note: arrow model points up)
 	glm::mat4 mv_matrix_x =
 		glm::translate(glm::vec3(0.0f, 0.0f, 0.0f)) *
@@ -273,34 +271,36 @@ void updateSceneElements() {
 	myLine.proj_matrix = myGraphics.proj_matrix;
 
 	// MY OBJECTS
+	mySphere.Translate(myGraphics, glm::vec3(-2.0f, 2.5f, 0.0f));
+	//mySphere.Translate(myGraphics, glm::vec3(0.0f, 2.5f, -5.0f));
+	mySphere.Rotate(myGraphics, glm::radians(-45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+
+	if (t == 0.0f) {
 		
-	int gap = 1;
-	for (int i = 0; i < L * 4 - 4; i++) {
-		// Bottom border
-		if (i < L) {
-			border[i].Translate(myGraphics, glm::vec3(0.0f + gap * i, 0.5f, 0.0f));
-			border[i].fillColor = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
-		}
-		// Left border
-		else if (i < L * 2 - 2) {
-			border[i].Translate(myGraphics, glm::vec3(0.0f + (L - 1) * gap, 0.5f, 0.0f + gap * (i - L + 1)));
-			border[i].fillColor = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
-		}
-		// Top border
-		else if (i < L * 3 - 2) {
-			border[i].Translate(myGraphics, glm::vec3(0.0f + gap * (i - L * 2 + 2), 0.5f, 0.0f + gap * (L - 1)));
-			border[i].fillColor = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);
-		}
-		// Right border
-		else {
-			border[i].Translate(myGraphics, glm::vec3(0.0f, 0.5f, 0.0f + gap * (i - L * 3 + 3)));
-			border[i].fillColor = glm::vec4(0.5f, 0.5f, 0.5f, 1.0f);
+		int gap = 1;
+		for (int i = 0; i < L * 4 - 4; i++) {
+			// Bottom border
+			if (i < L) {
+				border[i].Translate(myGraphics, glm::vec3(0.0f + gap * i, 0.5f, 0.0f));
+				border[i].fillColor = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
+			}
+			// Left border
+			else if (i < L * 2 - 2) {
+				border[i].Translate(myGraphics, glm::vec3(0.0f + (L - 1) * gap, 0.5f, 0.0f + gap * (i - L + 1)));
+				border[i].fillColor = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
+			}
+			// Top border
+			else if (i < L * 3 - 2) {
+				border[i].Translate(myGraphics, glm::vec3(0.0f + gap * (i - L * 2 + 2), 0.5f, 0.0f + gap * (L - 1)));
+				border[i].fillColor = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);
+			}
+			// Right border
+			else {
+				border[i].Translate(myGraphics, glm::vec3(0.0f, 0.5f, 0.0f + gap * (i - L * 3 + 3)));
+				border[i].fillColor = glm::vec4(0.5f, 0.5f, 0.5f, 1.0f);
+			}
 		}
 	}
-	
-	
-	
-
 
 	t += 0.01f; // increment movement variable
 

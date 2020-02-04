@@ -42,11 +42,8 @@ protected:
 
 class BoundingBox : public Shapes {
 public:
-	BoundingBox(Shapes shape);
 	BoundingBox();
 	~BoundingBox();
-	glm::vec3 min;
-	glm::vec3 max;
 };
 
 class Collidable : public Shapes {
