@@ -48,11 +48,14 @@ public:
 
 class Collidable : public Shapes {
 public:
+	Collidable();
 	void Translate(Graphics graphics, glm::vec3 t);
 	void Rotate(Graphics graphics, float r, glm::vec3 t);
 	void Scale(Graphics graphics, glm::vec3 t);
+	void Refresh(Graphics graphics);
 
 	BoundingBox boundingBox;
+	glm::mat4 position_memory;
 };
 
 class Cube : public Collidable {

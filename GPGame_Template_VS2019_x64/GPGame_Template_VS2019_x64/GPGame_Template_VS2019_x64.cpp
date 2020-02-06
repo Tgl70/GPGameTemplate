@@ -120,29 +120,13 @@ void startup() {
 	myGraphics.proj_matrix = glm::perspective(glm::radians(50.0f), myGraphics.aspect, 0.1f, 1000.0f);
 
 	// Load Geometry examples
-	myCube.Load();
-
 	mySphere.Load();
 	mySphere.boundingBox.Load();
 	mySphere.fillColor = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);    // You can change the shape fill colour, line colour or linewidth
 
-	arrowX.Load(); arrowY.Load(); arrowZ.Load();
-	arrowX.fillColor = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f); arrowX.lineColor = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
-	arrowY.fillColor = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f); arrowY.lineColor = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
-	arrowZ.fillColor = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f); arrowZ.lineColor = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);
-
 	myFloor.Load();
 	myFloor.fillColor = glm::vec4(130.0f / 255.0f, 96.0f / 255.0f, 61.0f / 255.0f, 1.0f);    // Sand Colour
 	myFloor.lineColor = glm::vec4(130.0f / 255.0f, 96.0f / 255.0f, 61.0f / 255.0f, 1.0f);    // Sand again
-
-	myCylinder.Load();
-	myCylinder.fillColor = glm::vec4(0.7f, 0.7f, 0.7f, 1.0f);
-	myCylinder.lineColor = glm::vec4(0.0f, 0.0f, 0.0f, 1.0f);
-
-	myLine.Load();
-	myLine.fillColor = glm::vec4(1.0f, 1.0f, 1.0f, 1.0f);
-	myLine.lineColor = glm::vec4(0.2f, 0.2f, 0.2f, 1.0f);
-	myLine.lineWidth = 5.0f;
 
 	// MY OBJECTS
 	for (int i = 0; i < L * 4 - 4; i++) {
@@ -210,47 +194,6 @@ void updateSceneElements() {
 
 	// Do not forget your ( T * R * S ) http://www.opengl-tutorial.org/beginners-tutorials/tutorial-3-matrices/
 
-	// Calculate Cube position
-	glm::mat4 mv_matrix_cube =
-		glm::translate(glm::vec3(2.0f, 0.5f, 0.0f)) *
-		glm::mat4(1.0f);
-	myCube.mv_matrix = myGraphics.viewMatrix * mv_matrix_cube;
-	myCube.proj_matrix = myGraphics.proj_matrix;
-
-	// calculate Sphere movement
-	//glm::mat4 mv_matrix_sphere =
-		//glm::translate(glm::vec3(-2.0f, 2.5f, 0.0f)) *
-		//glm::rotate(-t, glm::vec3(0.0f, 1.0f, 0.0f)) *
-		//glm::rotate(-t, glm::vec3(1.0f, 0.0f, 0.0f)) *
-		//glm::mat4(1.0f);
-	//mySphere.mv_matrix = myGraphics.viewMatrix * mv_matrix_sphere;
-	//mySphere.proj_matrix = myGraphics.proj_matrix;
-	
-	//Calculate Arrows translations (note: arrow model points up)
-	glm::mat4 mv_matrix_x =
-		glm::translate(glm::vec3(0.0f, 0.0f, 0.0f)) *
-		glm::rotate(glm::radians(-90.0f), glm::vec3(0.0f, 0.0f, 1.0f)) *
-		glm::scale(glm::vec3(0.2f, 0.5f, 0.2f)) *
-		glm::mat4(1.0f);
-	arrowX.mv_matrix = myGraphics.viewMatrix * mv_matrix_x;
-	arrowX.proj_matrix = myGraphics.proj_matrix;
-
-	glm::mat4 mv_matrix_y =
-		glm::translate(glm::vec3(0.0f, 0.0f, 0.0f)) *
-		//glm::rotate(glm::radians(-90.0f), glm::vec3(0.0f, 0.0f, 1.0f)) *    // already model pointing up
-		glm::scale(glm::vec3(0.2f, 0.5f, 0.2f)) *
-		glm::mat4(1.0f);
-	arrowY.mv_matrix = myGraphics.viewMatrix * mv_matrix_y;
-	arrowY.proj_matrix = myGraphics.proj_matrix;
-
-	glm::mat4 mv_matrix_z =
-		glm::translate(glm::vec3(0.0f, 0.0f, 0.0f)) *
-		glm::rotate(glm::radians(90.0f), glm::vec3(1.0f, 0.0f, 0.0f)) *
-		glm::scale(glm::vec3(0.2f, 0.5f, 0.2f)) *
-		glm::mat4(1.0f);
-	arrowZ.mv_matrix = myGraphics.viewMatrix * mv_matrix_z;
-	arrowZ.proj_matrix = myGraphics.proj_matrix;
-
 	// Calculate floor position and resize
 	myFloor.mv_matrix = myGraphics.viewMatrix *
 		glm::translate(glm::vec3(0.0f, 0.0f, 0.0f)) *
@@ -258,25 +201,13 @@ void updateSceneElements() {
 		glm::mat4(1.0f);
 	myFloor.proj_matrix = myGraphics.proj_matrix;
 
-	// Calculate cylinder
-	myCylinder.mv_matrix = myGraphics.viewMatrix *
-		glm::translate(glm::vec3(-1.0f, 0.5f, 2.0f)) *
-		glm::mat4(1.0f);
-	myCylinder.proj_matrix = myGraphics.proj_matrix;
-
-	// Calculate Line
-	myLine.mv_matrix = myGraphics.viewMatrix *
-		glm::translate(glm::vec3(1.0f, 0.5f, 2.0f)) *
-		glm::mat4(1.0f);
-	myLine.proj_matrix = myGraphics.proj_matrix;
-
 	// MY OBJECTS
-	mySphere.Translate(myGraphics, glm::vec3(-2.0f, 2.5f, 0.0f));
-	//mySphere.Translate(myGraphics, glm::vec3(0.0f, 2.5f, -5.0f));
-	mySphere.Rotate(myGraphics, glm::radians(-45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	if (t == 0.001f) {
+		mySphere.Translate(myGraphics, glm::vec3(-2.0f, 2.5f, 0.0f));
+		mySphere.Translate(myGraphics, glm::vec3(0.0f, 2.5f, -5.0f));
+		mySphere.Rotate(myGraphics, glm::radians(-45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+		mySphere.Scale(myGraphics, glm::vec3(4.0f, 2.0f, 1.0f));
 
-	if (t == 0.0f) {
-		
 		int gap = 1;
 		for (int i = 0; i < L * 4 - 4; i++) {
 			// Bottom border
@@ -301,8 +232,13 @@ void updateSceneElements() {
 			}
 		}
 	}
+	
+	mySphere.Refresh(myGraphics);
+	for (int i = 0; i < size(border); i++) {
+		border[i].Refresh(myGraphics);
+	}
 
-	t += 0.01f; // increment movement variable
+	t += 0.001f; // increment movement variable
 
 
 	if (glfwWindowShouldClose(myGraphics.window) == GL_TRUE) quit = true; // If quit by pressing x on window.

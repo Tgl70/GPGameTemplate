@@ -208,10 +208,16 @@ BoundingBox::~BoundingBox() {
 
 }
 
+Collidable::Collidable() {
+	position_memory = glm::mat4(1.0f);
+}
+
 void Collidable::Translate(Graphics graphics, glm::vec3 t) {
 	glm::mat4 mv_matrix =
+		this->position_memory *
 		glm::translate(t) *
 		glm::mat4(1.0f);
+	this->position_memory = mv_matrix;
 
 	this->mv_matrix = graphics.viewMatrix * mv_matrix;
 	this->proj_matrix = graphics.proj_matrix;
@@ -222,8 +228,10 @@ void Collidable::Translate(Graphics graphics, glm::vec3 t) {
 
 void Collidable::Rotate(Graphics graphics, float r, glm::vec3 t) {
 	glm::mat4 mv_matrix =
+		this->position_memory *
 		glm::rotate(r, t) *
 		glm::mat4(1.0f);
+	this->position_memory = mv_matrix;
 
 	this->mv_matrix = graphics.viewMatrix * mv_matrix;
 	this->proj_matrix = graphics.proj_matrix;
@@ -234,13 +242,23 @@ void Collidable::Rotate(Graphics graphics, float r, glm::vec3 t) {
 
 void Collidable::Scale(Graphics graphics, glm::vec3 t) {
 	glm::mat4 mv_matrix =
+		this->position_memory *
 		glm::scale(t) *
 		glm::mat4(1.0f);
+	this->position_memory = mv_matrix;
 
 	this->mv_matrix = graphics.viewMatrix * mv_matrix;
 	this->proj_matrix = graphics.proj_matrix;
 
 	boundingBox.mv_matrix = graphics.viewMatrix * mv_matrix;
+	boundingBox.proj_matrix = graphics.proj_matrix;
+}
+
+void Collidable::Refresh(Graphics graphics) {
+	this->mv_matrix = graphics.viewMatrix * this->position_memory;
+	this->proj_matrix = graphics.proj_matrix;
+
+	boundingBox.mv_matrix = graphics.viewMatrix * this->position_memory;
 	boundingBox.proj_matrix = graphics.proj_matrix;
 }
 
