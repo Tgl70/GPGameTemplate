@@ -53,9 +53,13 @@ public:
 	void Rotate(Graphics graphics, float r, glm::vec3 t);
 	void Scale(Graphics graphics, glm::vec3 t);
 	void Refresh(Graphics graphics);
+	void CalculateMinMax(Graphics graphics);
+	void CalculateBoundingBox(Graphics graphics);
 
 	BoundingBox boundingBox;
 	glm::mat4 position_memory;
+	glm::vec3 min;
+	glm::vec3 max;
 };
 
 class Cube : public Collidable {

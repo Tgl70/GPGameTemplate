@@ -194,15 +194,10 @@ void updateSceneElements() {
 
 	// Do not forget your ( T * R * S ) http://www.opengl-tutorial.org/beginners-tutorials/tutorial-3-matrices/
 
-	// Calculate floor position and resize
-	myFloor.mv_matrix = myGraphics.viewMatrix *
-		glm::translate(glm::vec3(0.0f, 0.0f, 0.0f)) *
-		glm::scale(glm::vec3(1000.0f, 0.001f, 1000.0f)) *
-		glm::mat4(1.0f);
-	myFloor.proj_matrix = myGraphics.proj_matrix;
-
 	// MY OBJECTS
 	if (t == 0.001f) {
+		myFloor.Scale(myGraphics, glm::vec3(1000.0f, 0.001f, 1000.0f));
+
 		mySphere.Translate(myGraphics, glm::vec3(-2.0f, 2.5f, 0.0f));
 		mySphere.Translate(myGraphics, glm::vec3(0.0f, 2.5f, -5.0f));
 		mySphere.Rotate(myGraphics, glm::radians(-45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
@@ -233,6 +228,7 @@ void updateSceneElements() {
 		}
 	}
 	
+	myFloor.Refresh(myGraphics);
 	mySphere.Refresh(myGraphics);
 	for (int i = 0; i < size(border); i++) {
 		border[i].Refresh(myGraphics);

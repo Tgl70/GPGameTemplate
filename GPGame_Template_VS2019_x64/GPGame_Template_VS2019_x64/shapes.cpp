@@ -212,6 +212,55 @@ Collidable::Collidable() {
 	position_memory = glm::mat4(1.0f);
 }
 
+void Collidable::CalculateMinMax(Graphics graphics) {
+	vector<float> v1 = this->vertexPositions;
+	float max_x = -INFINITY, min_x = INFINITY, max_y = -INFINITY, min_y = INFINITY, max_z = -INFINITY, min_z = INFINITY;
+	for (int i = 0; i < v1.size(); i += 3) {
+		int k = i + 1, j = i + 2;
+		//float x = v1[i], y = v1[k], z = v1[j];
+		glm::vec4 v = glm::vec4(v1[i], v1[k], v1[j], 1);
+		v = this->proj_matrix * graphics.viewMatrix * this->position_memory * v;
+		if (v[0] > max_x) {
+			max_x = v[0];
+		}
+		if (v[0] < min_x) {
+			min_x = v[0];
+		}
+		if (v[1] > max_y) {
+			max_y = v[1];
+		}
+		if (v[1] < min_y) {
+			min_y = v[1];
+		}
+		if (v[2] > max_z) {
+			max_z = v[2];
+		}
+		if (v[2] < min_z) {
+			min_z = v[2];
+		}
+	}
+	this->min = glm::vec3(min_x, min_y, min_z);
+	this->max = glm::vec3(max_x, max_y, max_z);
+}
+
+void Collidable::CalculateBoundingBox(Graphics graphics) {
+	CalculateMinMax(graphics);
+	this->min;
+	this->max;
+
+	glm::vec3 c = glm::vec3((max[0] + min[0])/2, (max[1] + min[1])/2, (max[2] + min[2])/2);
+	glm::vec3 s = glm::vec3(max[0] - min[0], max[1] - min[1], max[2] - min[2]);
+
+	glm::mat4 mv_matrix =
+		glm::translate(c) *
+		glm::scale(s) *
+		glm::mat4(1.0f);
+	this->position_memory = mv_matrix;
+
+	boundingBox.mv_matrix = graphics.viewMatrix * mv_matrix;
+	boundingBox.proj_matrix = graphics.proj_matrix;
+}
+
 void Collidable::Translate(Graphics graphics, glm::vec3 t) {
 	glm::mat4 mv_matrix =
 		this->position_memory *
@@ -222,8 +271,7 @@ void Collidable::Translate(Graphics graphics, glm::vec3 t) {
 	this->mv_matrix = graphics.viewMatrix * mv_matrix;
 	this->proj_matrix = graphics.proj_matrix;
 
-	boundingBox.mv_matrix = graphics.viewMatrix * mv_matrix;
-	boundingBox.proj_matrix = graphics.proj_matrix;
+	CalculateBoundingBox(graphics);
 }
 
 void Collidable::Rotate(Graphics graphics, float r, glm::vec3 t) {
@@ -236,8 +284,7 @@ void Collidable::Rotate(Graphics graphics, float r, glm::vec3 t) {
 	this->mv_matrix = graphics.viewMatrix * mv_matrix;
 	this->proj_matrix = graphics.proj_matrix;
 
-	boundingBox.mv_matrix = graphics.viewMatrix * mv_matrix;
-	boundingBox.proj_matrix = graphics.proj_matrix;
+	CalculateBoundingBox(graphics);
 }
 
 void Collidable::Scale(Graphics graphics, glm::vec3 t) {
@@ -250,16 +297,14 @@ void Collidable::Scale(Graphics graphics, glm::vec3 t) {
 	this->mv_matrix = graphics.viewMatrix * mv_matrix;
 	this->proj_matrix = graphics.proj_matrix;
 
-	boundingBox.mv_matrix = graphics.viewMatrix * mv_matrix;
-	boundingBox.proj_matrix = graphics.proj_matrix;
+	CalculateBoundingBox(graphics);
 }
 
 void Collidable::Refresh(Graphics graphics) {
 	this->mv_matrix = graphics.viewMatrix * this->position_memory;
 	this->proj_matrix = graphics.proj_matrix;
 
-	boundingBox.mv_matrix = graphics.viewMatrix * this->position_memory;
-	boundingBox.proj_matrix = graphics.proj_matrix;
+	CalculateBoundingBox(graphics);
 }
 
 Cube::Cube() {
