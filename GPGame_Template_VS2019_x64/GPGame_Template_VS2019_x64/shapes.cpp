@@ -209,7 +209,11 @@ BoundingBox::~BoundingBox() {
 }
 
 Collidable::Collidable() {
-	position_memory = glm::mat4(1.0f);
+	this->position_memory = glm::mat4(1.0f);
+	this->min = glm::vec3(0.0f, 0.0f, 0.0f);
+	this->max = glm::vec3(0.0f, 0.0f, 0.0f);
+	this->mass = 0.0f;
+	this->velocity = glm::vec3(0.0f, 0.0f, 0.0f);
 }
 
 void Collidable::CalculateMinMax(Graphics graphics) {
@@ -304,6 +308,15 @@ void Collidable::Refresh(Graphics graphics) {
 	CalculateBoundingBox(graphics);
 }
 
+bool Collidable::CheckCollision(Collidable c) {
+	return (this->max[0] >= c.min[0]) && (this->max[1] >= c.min[1]) && (this->max[2] >= c.min[2])
+		&& (this->min[0] <= c.max[0]) && (this->min[1] <= c.max[1]) && (this->min[2] <= c.max[2]);
+}
+
+void Collidable::Accelerate(float a, float t) {
+	this->velocity[1] = this->velocity[1] - a * t;
+}
+
 Cube::Cube() {
 	// Exported from Blender a cube by default (OBJ File)
 	rawData = R"(
@@ -330,6 +343,11 @@ f 1 4 8)";
 
 	LoadObj();
 	this->boundingBox = BoundingBox();
+}
+
+Cube::Cube(float mass) {
+	Cube();
+	this->mass = mass;
 }
 
 Cube::~Cube() {
@@ -842,6 +860,11 @@ Sphere::~Sphere() {
 
 }
 
+Sphere::Sphere(float mass) {
+	Sphere();
+	this->mass = mass;
+}
+
 Arrow::Arrow() {
 
 	rawData = R"(
@@ -1098,6 +1121,11 @@ f 3/38/12 7/25/12 15/27/12
 
 Cylinder::~Cylinder() {
 
+}
+
+Cylinder::Cylinder(float mass) {
+	Cylinder();
+	this->mass = mass;
 }
 
 

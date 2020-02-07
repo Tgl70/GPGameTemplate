@@ -40,7 +40,7 @@ void onMouseWheelCallback(GLFWwindow* window, double xoffset, double yoffset);
 
 // VARIABLES
 bool        quit = false;
-float       deltaTime = 0.0f;    // Keep track of time per frame.
+float       deltaTime = 0.00f;    // Keep track of time per frame.
 float       lastTime = 0.0f;    // variable to keep overall time.
 bool        keyStatus[1024];    // Hold key status.
 bool		mouseEnabled = true; // keep track of mouse toggle.
@@ -63,7 +63,8 @@ const int L = 20; // Number of cubes per side in the border
 Cube border[L*4-4];
 
 // Some global variable to do the animation.
-float t = 0.001f;            // Global variable for animation
+float t = 0.000f;            // Global variable for animation
+float g = 9.81f;			// gravity constant
 
 
 int main()
@@ -125,6 +126,7 @@ void startup() {
 	mySphere.fillColor = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);    // You can change the shape fill colour, line colour or linewidth
 
 	myFloor.Load();
+	myFloor.boundingBox.Load();
 	myFloor.fillColor = glm::vec4(130.0f / 255.0f, 96.0f / 255.0f, 61.0f / 255.0f, 1.0f);    // Sand Colour
 	myFloor.lineColor = glm::vec4(130.0f / 255.0f, 96.0f / 255.0f, 61.0f / 255.0f, 1.0f);    // Sand again
 
@@ -195,7 +197,7 @@ void updateSceneElements() {
 	// Do not forget your ( T * R * S ) http://www.opengl-tutorial.org/beginners-tutorials/tutorial-3-matrices/
 
 	// MY OBJECTS
-	if (t == 0.001f) {
+	if (t == 0.000f) {
 		myFloor.Scale(myGraphics, glm::vec3(1000.0f, 0.001f, 1000.0f));
 
 		mySphere.Translate(myGraphics, glm::vec3(-2.0f, 2.5f, 0.0f));
@@ -228,6 +230,17 @@ void updateSceneElements() {
 		}
 	}
 	
+	else {
+		// If an object is not on the floor fall
+		if (!mySphere.CheckCollision(myFloor)) {
+			mySphere.Accelerate(g, 0.001f);
+			mySphere.Translate(myGraphics, mySphere.velocity);
+		}
+		else {
+			mySphere.velocity = glm::vec3(0.0f, 0.0f, 0.0f);
+		}
+	}
+	// REFRESH OBJECTS
 	myFloor.Refresh(myGraphics);
 	mySphere.Refresh(myGraphics);
 	for (int i = 0; i < size(border); i++) {
@@ -247,16 +260,9 @@ void renderScene() {
 
 	// Draw objects in screen
 	myFloor.Draw();
-	//myCube.Draw();
+	myFloor.boundingBox.Draw();
 	mySphere.Draw();
 	mySphere.boundingBox.Draw();
-
-	//arrowX.Draw();
-	//arrowY.Draw();
-	//arrowZ.Draw();
-
-	//myLine.Draw();
-	//myCylinder.Draw();
 
 	// MY OBJECTS
 	for (int i = 0; i < L * 4 - 4; i++) {

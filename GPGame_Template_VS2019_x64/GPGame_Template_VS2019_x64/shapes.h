@@ -49,28 +49,43 @@ public:
 class Collidable : public Shapes {
 public:
 	Collidable();
+	//TRANSFORM
 	void Translate(Graphics graphics, glm::vec3 t);
 	void Rotate(Graphics graphics, float r, glm::vec3 t);
 	void Scale(Graphics graphics, glm::vec3 t);
 	void Refresh(Graphics graphics);
+	
+	//BOUNDING BOXES
 	void CalculateMinMax(Graphics graphics);
 	void CalculateBoundingBox(Graphics graphics);
+	
+	//COLLISIONS
+	bool CheckCollision(Collidable c);
+	//void Collide();
+
+	//PHYSICS
+	void Accelerate(float a, float t);
 
 	BoundingBox boundingBox;
 	glm::mat4 position_memory;
 	glm::vec3 min;
 	glm::vec3 max;
+
+	float mass;
+	glm::vec3 velocity;
 };
 
 class Cube : public Collidable {
 public:
 	Cube();
+	Cube(float mass);
 	~Cube();
 };
 
 class Sphere : public Collidable {
 public:
 	Sphere();
+	Sphere(float mass);
 	~Sphere();
 };
 
@@ -83,6 +98,7 @@ public:
 class Cylinder : public Collidable {
 public:
 	Cylinder();
+	Cylinder(float mass);
 	~Cylinder();
 };
 
