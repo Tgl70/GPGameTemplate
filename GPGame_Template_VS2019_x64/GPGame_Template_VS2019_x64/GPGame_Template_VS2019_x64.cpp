@@ -266,7 +266,7 @@ void updateSceneElements() {
 			cucumber.velocity = glm::vec3(0.0f, 0.0f, 0.0f);
 		}
 	}
-	if (t == 0 || t == 100 || t == 300) {
+	if (t % 100 == 0) {
 		emitter.Shoot();
 	}
 	

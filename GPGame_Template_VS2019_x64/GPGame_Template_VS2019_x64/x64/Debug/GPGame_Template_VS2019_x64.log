@@ -1,20 +1,2 @@
-﻿  emitter.cpp
-D:\Heriot-Watt\Computer Games Programming\Template\GPGameTemplate\GPGame_Template_VS2019_x64\GPGame_Template_VS2019_x64\emitter.cpp(5,19): warning C4244: '=': conversione da 'float' a 'int'. Possibile perdita di dati.
-  GPGame_Template_VS2019_x64.cpp
-  graphics.cpp
-  shapes.cpp
-D:\Heriot-Watt\Computer Games Programming\Template\GPGameTemplate\GPGame_Template_VS2019_x64\GPGame_Template_VS2019_x64\shapes.cpp(30,39): warning C4267: 'inizializzazione': conversione da 'size_t' a 'int'. Possibile perdita di dati.
-D:\Heriot-Watt\Computer Games Programming\Template\GPGameTemplate\GPGame_Template_VS2019_x64\GPGame_Template_VS2019_x64\shapes.cpp(30,91): warning C4267: 'inizializzazione': conversione da 'size_t' a 'int'. Possibile perdita di dati.
-D:\Heriot-Watt\Computer Games Programming\Template\GPGameTemplate\GPGame_Template_VS2019_x64\GPGame_Template_VS2019_x64\shapes.cpp(33,72): warning C4267: '=': conversione da 'size_t' a 'int'. Possibile perdita di dati.
-D:\Heriot-Watt\Computer Games Programming\Template\GPGameTemplate\GPGame_Template_VS2019_x64\GPGame_Template_VS2019_x64\shapes.cpp(36,72): warning C4267: '=': conversione da 'size_t' a 'int'. Possibile perdita di dati.
-D:\Heriot-Watt\Computer Games Programming\Template\GPGameTemplate\GPGame_Template_VS2019_x64\GPGame_Template_VS2019_x64\shapes.cpp(44,39): warning C4267: 'inizializzazione': conversione da 'size_t' a 'int'. Possibile perdita di dati.
-D:\Heriot-Watt\Computer Games Programming\Template\GPGameTemplate\GPGame_Template_VS2019_x64\GPGame_Template_VS2019_x64\shapes.cpp(44,91): warning C4267: 'inizializzazione': conversione da 'size_t' a 'int'. Possibile perdita di dati.
-D:\Heriot-Watt\Computer Games Programming\Template\GPGameTemplate\GPGame_Template_VS2019_x64\GPGame_Template_VS2019_x64\shapes.cpp(47,72): warning C4267: '=': conversione da 'size_t' a 'int'. Possibile perdita di dati.
-D:\Heriot-Watt\Computer Games Programming\Template\GPGameTemplate\GPGame_Template_VS2019_x64\GPGame_Template_VS2019_x64\shapes.cpp(50,72): warning C4267: '=': conversione da 'size_t' a 'int'. Possibile perdita di dati.
-D:\Heriot-Watt\Computer Games Programming\Template\GPGameTemplate\GPGame_Template_VS2019_x64\GPGame_Template_VS2019_x64\shapes.cpp(57,40): warning C4267: 'inizializzazione': conversione da 'size_t' a 'int'. Possibile perdita di dati.
-D:\Heriot-Watt\Computer Games Programming\Template\GPGameTemplate\GPGame_Template_VS2019_x64\GPGame_Template_VS2019_x64\shapes.cpp(57,94): warning C4267: 'inizializzazione': conversione da 'size_t' a 'int'. Possibile perdita di dati.
-D:\Heriot-Watt\Computer Games Programming\Template\GPGameTemplate\GPGame_Template_VS2019_x64\GPGame_Template_VS2019_x64\shapes.cpp(156,58): warning C4267: 'argomento': conversione da 'size_t' a 'GLsizei'. Possibile perdita di dati.
-D:\Heriot-Watt\Computer Games Programming\Template\GPGameTemplate\GPGame_Template_VS2019_x64\GPGame_Template_VS2019_x64\shapes.cpp(160,58): warning C4267: 'argomento': conversione da 'size_t' a 'GLsizei'. Possibile perdita di dati.
-  Generazione del codice in corso...
-LINK : warning LNK4098: la libreria predefinita 'MSVCRT' è in conflitto con l'utilizzo di altre librerie; usare /NODEFAULTLIB:libreria
+﻿  GPGame_Template_VS2019_x64.cpp
   GPGame_Template_VS2019_x64.vcxproj -> D:\Heriot-Watt\Computer Games Programming\Template\GPGameTemplate\GPGame_Template_VS2019_x64\x64\Debug\GPGame_Template_VS2019_x64.exe

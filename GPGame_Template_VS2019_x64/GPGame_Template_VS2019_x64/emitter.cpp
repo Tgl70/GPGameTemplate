@@ -1,8 +1,8 @@
 #include "emitter.h"
 
 const float PI = 3.1415927f;
-const float MAGNITUDE = 1.0f;
-const float TTL = 10;
+const float MAGNITUDE = 0.5f;
+const float TTL = 30;
 
 Emitter::Emitter() {
 
@@ -19,14 +19,11 @@ Emitter::Emitter(int n_particles) {
 	this->placeholder = cube;
 
 	for (int i = 0; i < n_particles; i++) {
-		float alfa = (i * 360.0f / n_particles) * PI / 180.0f; // Converted the angle in Radians
-		
 		Particle particle;
 		particle.Load();
 		particle.boundingBox.Load();
 		particle.mass = 0.1f;
 		particle.fillColor = glm::vec4(255.0f / 255.0f, 255.0f / 255.0f, 0.0f / 255.0f, 1.0f);
-		particle.velocity = glm::vec3(MAGNITUDE * cos(alfa), MAGNITUDE * 0.0f, MAGNITUDE * sin(alfa));
 		this->particles.push_back(particle);
 	}
 }
@@ -76,8 +73,10 @@ void Emitter::Refresh(Graphics graphics) {
 
 void Emitter::Shoot() {
 	for (int i = 0; i < n_particles; i++) {
+		float alfa = (i * 360.0f / n_particles) * PI / 180.0f; // Converted the angle in Radians
 		particles[i].visible = true;
 		particles[i].position_memory = placeholder.position_memory;
+		particles[i].velocity = glm::vec3(MAGNITUDE * cos(alfa), MAGNITUDE * 0.0f, MAGNITUDE * sin(alfa));
 		particles[i].ttl = TTL;
 	}
 }
