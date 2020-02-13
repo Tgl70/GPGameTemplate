@@ -201,7 +201,7 @@ f 7 8 4
 f 1 4 8)";
 
 	LoadObj();
-	this->fillColor = glm::vec4(0.68f, 0.85f, 0.9f, 0.5f);
+	this->fillColor = glm::vec4(0.68f, 0.85f, 0.9f, 0.2f);
 }
 
 BoundingBox::~BoundingBox() {
@@ -313,8 +313,8 @@ bool Collidable::CheckCollision(Collidable c) {
 		&& (this->min[0] <= c.max[0]) && (this->min[1] <= c.max[1]) && (this->min[2] <= c.max[2]);
 }
 
-void Collidable::Accelerate(float a, float t) {
-	this->velocity[1] = this->velocity[1] - a * t;
+void Collidable::Accelerate(glm::vec3 a, float t) {
+	this->velocity = this->velocity + a * t;
 }
 
 Cube::Cube() {
@@ -343,6 +343,7 @@ f 1 4 8)";
 
 	LoadObj();
 	this->boundingBox = BoundingBox();
+	this->mass = 0.0f;
 }
 
 Cube::Cube(float mass) {
@@ -863,6 +864,15 @@ Sphere::~Sphere() {
 Sphere::Sphere(float mass) {
 	Sphere();
 	this->mass = mass;
+}
+
+Particle::Particle() {
+	Sphere();
+	this->mass = 0.0f;
+}
+
+Particle::~Particle() {
+
 }
 
 Arrow::Arrow() {

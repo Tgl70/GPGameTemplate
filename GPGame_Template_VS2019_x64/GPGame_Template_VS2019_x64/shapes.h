@@ -64,7 +64,7 @@ public:
 	//void Collide();
 
 	//PHYSICS
-	void Accelerate(float a, float t);
+	void Accelerate(glm::vec3 a, float t);
 
 	BoundingBox boundingBox;
 	glm::mat4 position_memory;
@@ -73,6 +73,8 @@ public:
 
 	float mass;
 	glm::vec3 velocity;
+
+	bool visible = true;
 };
 
 class Cube : public Collidable {
@@ -87,6 +89,12 @@ public:
 	Sphere();
 	Sphere(float mass);
 	~Sphere();
+};
+
+class Particle : public Sphere {
+public:
+	Particle();
+	~Particle();
 };
 
 class Arrow : public Collidable {

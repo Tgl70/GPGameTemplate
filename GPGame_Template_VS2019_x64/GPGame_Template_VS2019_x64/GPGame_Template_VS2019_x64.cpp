@@ -24,6 +24,7 @@ using namespace std;
 #include <glm/gtx/transform.hpp>
 #include "graphics.h"
 #include "shapes.h"
+#include "emitter.h"
 
 // MAIN FUNCTIONS
 void startup();
@@ -48,23 +49,18 @@ bool		mouseEnabled = true; // keep track of mouse toggle.
 // MAIN GRAPHICS OBJECT
 Graphics    myGraphics;        // Runing all the graphics in this object
 
-// DEMO OBJECTS
-Cube        myCube;
-Sphere      mySphere;
-Arrow       arrowX;
-Arrow       arrowY;
-Arrow       arrowZ;
-Cube        myFloor;
-Line        myLine;
-Cylinder    myCylinder;
-
-// MY OBJECTS
+// OBJECTS
 const int L = 20; // Number of cubes per side in the border
-Cube border[L*4-4];
+const int	N_PARTICLES = 18;
+
+Cube        myFloor;
+Sphere      mySphere;
+Cube		border[L*4-4];
+Emitter		emitter;
 
 // Some global variable to do the animation.
 float t = 0.000f;            // Global variable for animation
-float g = 9.81f;			// gravity constant
+glm::vec3 g = glm::vec3(0.0f, -9.81f, 0.0f);			// gravity constant
 
 
 int main()
@@ -137,6 +133,8 @@ void startup() {
 		cube.boundingBox.Load();
 		border[i] = cube;
 	}
+
+	emitter = Emitter(N_PARTICLES);
 
 	// Optimised Graphics
 	myGraphics.SetOptimisations();        // Cull and depth testing
@@ -228,6 +226,7 @@ void updateSceneElements() {
 				border[i].fillColor = glm::vec4(0.5f, 0.5f, 0.5f, 1.0f);
 			}
 		}
+		emitter.Init(myGraphics, glm::vec3(0.0f, 2.0f, 0.0f));
 	}
 	
 	else {
@@ -240,12 +239,16 @@ void updateSceneElements() {
 			mySphere.velocity = glm::vec3(0.0f, 0.0f, 0.0f);
 		}
 	}
+	if (t > 0.000f && t <= 0.050) {
+		emitter.Shoot(myGraphics);
+	}
 	// REFRESH OBJECTS
 	myFloor.Refresh(myGraphics);
 	mySphere.Refresh(myGraphics);
 	for (int i = 0; i < size(border); i++) {
 		border[i].Refresh(myGraphics);
 	}
+	emitter.Refresh(myGraphics);
 
 	t += 0.001f; // increment movement variable
 
@@ -259,16 +262,21 @@ void renderScene() {
 	myGraphics.ClearViewport();
 
 	// Draw objects in screen
-	myFloor.Draw();
-	myFloor.boundingBox.Draw();
-	mySphere.Draw();
-	mySphere.boundingBox.Draw();
-
-	// MY OBJECTS
-	for (int i = 0; i < L * 4 - 4; i++) {
-		border[i].Draw();
-		border[i].boundingBox.Draw();
+	if (myFloor.visible) {
+		myFloor.Draw();
+		myFloor.boundingBox.Draw();
 	}
+	if (mySphere.visible) {
+		mySphere.Draw();
+		mySphere.boundingBox.Draw();
+	}
+	for (int i = 0; i < L * 4 - 4; i++) {
+		if (border[i].visible) {
+			border[i].Draw();
+			border[i].boundingBox.Draw();
+		}
+	}
+	emitter.Draw();
 }
 
 
