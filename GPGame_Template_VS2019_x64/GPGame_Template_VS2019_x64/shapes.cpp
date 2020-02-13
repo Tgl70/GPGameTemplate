@@ -871,6 +871,11 @@ Particle::Particle() {
 	this->mass = 0.0f;
 }
 
+Particle::Particle(float ttl) {
+	Particle();
+	this->ttl = ttl;
+}
+
 Particle::~Particle() {
 
 }

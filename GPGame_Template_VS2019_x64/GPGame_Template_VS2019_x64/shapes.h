@@ -94,7 +94,9 @@ public:
 class Particle : public Sphere {
 public:
 	Particle();
+	Particle(float ttl);
 	~Particle();
+	float ttl; // Time To Live
 };
 
 class Arrow : public Collidable {

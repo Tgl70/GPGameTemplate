@@ -59,7 +59,7 @@ Cube		border[L*4-4];
 Emitter		emitter;
 
 // Some global variable to do the animation.
-float t = 0.000f;            // Global variable for animation
+int t = 0;            // Global variable for frame count
 glm::vec3 g = glm::vec3(0.0f, -9.81f, 0.0f);			// gravity constant
 
 
@@ -195,7 +195,7 @@ void updateSceneElements() {
 	// Do not forget your ( T * R * S ) http://www.opengl-tutorial.org/beginners-tutorials/tutorial-3-matrices/
 
 	// MY OBJECTS
-	if (t == 0.000f) {
+	if (t == 0) {
 		myFloor.Scale(myGraphics, glm::vec3(1000.0f, 0.001f, 1000.0f));
 
 		mySphere.Translate(myGraphics, glm::vec3(-2.0f, 2.5f, 0.0f));
@@ -239,8 +239,8 @@ void updateSceneElements() {
 			mySphere.velocity = glm::vec3(0.0f, 0.0f, 0.0f);
 		}
 	}
-	if (t > 0.000f && t <= 0.050) {
-		emitter.Shoot(myGraphics);
+	if (t == 0 || t == 20) {
+		emitter.Shoot();
 	}
 	// REFRESH OBJECTS
 	myFloor.Refresh(myGraphics);
@@ -250,8 +250,7 @@ void updateSceneElements() {
 	}
 	emitter.Refresh(myGraphics);
 
-	t += 0.001f; // increment movement variable
-
+	t++; // increment movement variable
 
 	if (glfwWindowShouldClose(myGraphics.window) == GL_TRUE) quit = true; // If quit by pressing x on window.
 
