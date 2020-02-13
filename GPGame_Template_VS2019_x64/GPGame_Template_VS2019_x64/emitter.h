@@ -19,7 +19,7 @@ public:
 	void Init(Graphics graphics, glm::vec3 position);
 	void Draw();
 	void Refresh(Graphics graphics);
-	void Shoot();
+	void Shoot(Graphics graphics);
 
 private:
 	vector<Particle> particles;

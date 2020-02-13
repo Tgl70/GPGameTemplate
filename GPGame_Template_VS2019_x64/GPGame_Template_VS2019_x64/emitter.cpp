@@ -1,8 +1,9 @@
 #include "emitter.h"
 
 const float PI = 3.1415927f;
-const float MAGNITUDE = 0.5f;
-const float TTL = 30;
+// (1.0, 200) for (0.3 dimension) -- (0.45, 100) for (0.8 dimension)
+const float MAGNITUDE = 0.45f;
+const float TTL = 100;
 
 Emitter::Emitter() {
 
@@ -34,12 +35,7 @@ Emitter::~Emitter() {
 
 void Emitter::Init(Graphics graphics, glm::vec3 position) {
 	this->placeholder.Translate(graphics, position);
-	this->placeholder.Scale(graphics, glm::vec3(0.05f, 0.05f, 0.05f));
-
-	for (int i = 0; i < n_particles; i++) {
-		this->particles[i].Translate(graphics, position);
-		this->particles[i].Scale(graphics, glm::vec3(0.01f, 0.01f, 0.01f));
-	}
+	this->placeholder.Scale(graphics, glm::vec3(0.04f, 0.04f, 0.04f));
 }
 
 void Emitter::Draw() {
@@ -50,7 +46,7 @@ void Emitter::Draw() {
 	for (int i = 0; i < n_particles; i++) {
 		if (particles[i].visible) {
 			particles[i].Draw();
-			particles[i].boundingBox.Draw();
+			//particles[i].boundingBox.Draw();
 		}
 	}
 }
@@ -71,12 +67,13 @@ void Emitter::Refresh(Graphics graphics) {
 	}
 }
 
-void Emitter::Shoot() {
+void Emitter::Shoot(Graphics graphics) {
 	for (int i = 0; i < n_particles; i++) {
 		float alfa = (i * 360.0f / n_particles) * PI / 180.0f; // Converted the angle in Radians
 		particles[i].visible = true;
 		particles[i].position_memory = placeholder.position_memory;
-		particles[i].velocity = glm::vec3(MAGNITUDE * cos(alfa), MAGNITUDE * 0.0f, MAGNITUDE * sin(alfa));
+		particles[i].Scale(graphics, glm::vec3(0.8f, 0.8f, 0.8f));
+		particles[i].velocity = glm::vec3(MAGNITUDE * cos(alfa), MAGNITUDE * 1.0f, MAGNITUDE * sin(alfa));
 		particles[i].ttl = TTL;
 	}
 }

@@ -53,7 +53,7 @@ Graphics    myGraphics;        // Runing all the graphics in this object
 
 // OBJECTS
 const int L = 20; // Number of cubes per side in the border
-const int	N_PARTICLES = 18;
+const int	N_PARTICLES = 20;
 
 Cube        pavement;
 Sphere      cucumber;
@@ -266,8 +266,8 @@ void updateSceneElements() {
 			cucumber.velocity = glm::vec3(0.0f, 0.0f, 0.0f);
 		}
 	}
-	if (t % 100 == 0) {
-		emitter.Shoot();
+	if (t % 150 == 0) {
+		emitter.Shoot(myGraphics);
 	}
 	
 	refresh();
