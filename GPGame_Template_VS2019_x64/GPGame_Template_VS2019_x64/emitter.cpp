@@ -21,9 +21,10 @@ Emitter::Emitter(int n_particles) {
 	for (int i = 0; i < n_particles; i++) {
 		float alfa = (i * 360.0f / n_particles) * PI / 180.0f; // Converted the angle in Radians
 		
-		Particle particle(1.0f);
+		Particle particle;
 		particle.Load();
 		particle.boundingBox.Load();
+		particle.mass = 0.1f;
 		particle.fillColor = glm::vec4(255.0f / 255.0f, 255.0f / 255.0f, 0.0f / 255.0f, 1.0f);
 		particle.velocity = glm::vec3(MAGNITUDE * cos(alfa), MAGNITUDE * 0.0f, MAGNITUDE * sin(alfa));
 		this->particles.push_back(particle);
@@ -64,7 +65,7 @@ void Emitter::Refresh(Graphics graphics) {
 			particles[i].visible = false;
 		}
 		else {
-			//particles[i].Gravity();
+			particles[i].Gravity();
 			particles[i].Translate(graphics, particles[i].velocity);
 			particles[i].ttl -= 1;
 		}

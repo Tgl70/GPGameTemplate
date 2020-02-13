@@ -876,12 +876,6 @@ Particle::Particle() {
 	this->ttl = 0;
 }
 
-Particle::Particle(float mass) {
-	Sphere();
-	this->mass = mass;
-	this->ttl = 0;
-}
-
 Particle::~Particle() {
 
 }

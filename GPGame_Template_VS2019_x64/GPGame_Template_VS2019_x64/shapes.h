@@ -95,7 +95,6 @@ public:
 class Particle : public Sphere {
 public:
 	Particle();
-	Particle(float mass);
 	~Particle();
 	int ttl; // Time To Live
 };

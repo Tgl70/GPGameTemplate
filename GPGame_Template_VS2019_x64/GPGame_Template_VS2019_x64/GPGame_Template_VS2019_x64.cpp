@@ -55,14 +55,16 @@ Graphics    myGraphics;        // Runing all the graphics in this object
 const int L = 20; // Number of cubes per side in the border
 const int	N_PARTICLES = 18;
 
-Cube        pavement(INFINITY);
-Sphere      cucumber(1.0f);
-Sphere		bouncingBall(1.0f);
+Cube        pavement;
+Sphere      cucumber;
+Sphere		bouncingBall;
 Cube		border[L*4-4];
 Emitter		emitter;
 
 // Some global variable to do the animation.
 int t = 0;            // Global variable for frame count
+glm::vec3 g = glm::vec3(0.0f, -9.81f, 0.0f);			// gravity constant
+
 
 int main()
 {
@@ -132,7 +134,7 @@ void startup() {
 	pavement.lineColor = glm::vec4(130.0f / 255.0f, 96.0f / 255.0f, 61.0f / 255.0f, 1.0f);    // Sand again
 
 	for (int i = 0; i < L * 4 - 4; i++) {
-		Cube cube(INFINITY);
+		Cube cube;
 		cube.Load();
 		cube.boundingBox.Load();
 		border[i] = cube;
@@ -145,18 +147,22 @@ void startup() {
 }
 
 void init() {
+	pavement.mass = INFINITY;
 	pavement.Scale(myGraphics, glm::vec3(1000.0f, 0.001f, 1000.0f));
 
+	cucumber.mass = 1.0f;
 	cucumber.Translate(myGraphics, glm::vec3(-3.0f, 2.5f, 0.0f));
 	cucumber.Translate(myGraphics, glm::vec3(0.0f, 2.5f, 4.0f));
 	cucumber.Rotate(myGraphics, glm::radians(-45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	cucumber.Scale(myGraphics, glm::vec3(4.0f, 2.0f, 1.0f));
 
+	bouncingBall.mass = 1.0f;
 	bouncingBall.Translate(myGraphics, glm::vec3(-2.0f, 3.0f, 1.0f));
 	bouncingBall.bouncer = true;
 
 	int gap = 1;
 	for (int i = 0; i < L * 4 - 4; i++) {
+		border[i].mass = INFINITY;
 		// Bottom border
 		if (i < L) {
 			border[i].Translate(myGraphics, glm::vec3(0.0f + gap * i, 0.5f, 0.0f));
@@ -253,7 +259,7 @@ void updateSceneElements() {
 	else {
 		// If an object is not on the floor fall
 		if (!cucumber.CheckCollision(pavement)) {
-			//cucumber.Gravity();
+			cucumber.Gravity();
 			cucumber.Translate(myGraphics, cucumber.velocity);
 		}
 		else {
