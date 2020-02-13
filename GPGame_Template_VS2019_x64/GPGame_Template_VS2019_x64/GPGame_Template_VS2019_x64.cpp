@@ -28,6 +28,8 @@ using namespace std;
 
 // MAIN FUNCTIONS
 void startup();
+void init();
+void refresh();
 void updateCamera();
 void updateSceneElements();
 void renderScene();
@@ -53,15 +55,14 @@ Graphics    myGraphics;        // Runing all the graphics in this object
 const int L = 20; // Number of cubes per side in the border
 const int	N_PARTICLES = 18;
 
-Cube        myFloor;
-Sphere      mySphere;
+Cube        pavement(INFINITY);
+Sphere      cucumber(1.0f);
+Sphere		bouncingBall(1.0f);
 Cube		border[L*4-4];
 Emitter		emitter;
 
 // Some global variable to do the animation.
 int t = 0;            // Global variable for frame count
-glm::vec3 g = glm::vec3(0.0f, -9.81f, 0.0f);			// gravity constant
-
 
 int main()
 {
@@ -117,18 +118,21 @@ void startup() {
 	myGraphics.proj_matrix = glm::perspective(glm::radians(50.0f), myGraphics.aspect, 0.1f, 1000.0f);
 
 	// Load Geometry examples
-	mySphere.Load();
-	mySphere.boundingBox.Load();
-	mySphere.fillColor = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);    // You can change the shape fill colour, line colour or linewidth
+	cucumber.Load();
+	cucumber.boundingBox.Load();
+	cucumber.fillColor = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);    // You can change the shape fill colour, line colour or linewidth
 
-	myFloor.Load();
-	myFloor.boundingBox.Load();
-	myFloor.fillColor = glm::vec4(130.0f / 255.0f, 96.0f / 255.0f, 61.0f / 255.0f, 1.0f);    // Sand Colour
-	myFloor.lineColor = glm::vec4(130.0f / 255.0f, 96.0f / 255.0f, 61.0f / 255.0f, 1.0f);    // Sand again
+	bouncingBall.Load();
+	bouncingBall.boundingBox.Load();
+	bouncingBall.fillColor = glm::vec4(255.0f / 255.0f, 192.0f / 255.0f, 203.0f / 255.0f, 1.0f);
 
-	// MY OBJECTS
+	pavement.Load();
+	pavement.boundingBox.Load();
+	pavement.fillColor = glm::vec4(130.0f / 255.0f, 96.0f / 255.0f, 61.0f / 255.0f, 1.0f);    // Sand Colour
+	pavement.lineColor = glm::vec4(130.0f / 255.0f, 96.0f / 255.0f, 61.0f / 255.0f, 1.0f);    // Sand again
+
 	for (int i = 0; i < L * 4 - 4; i++) {
-		Cube cube;
+		Cube cube(INFINITY);
 		cube.Load();
 		cube.boundingBox.Load();
 		border[i] = cube;
@@ -138,6 +142,53 @@ void startup() {
 
 	// Optimised Graphics
 	myGraphics.SetOptimisations();        // Cull and depth testing
+}
+
+void init() {
+	pavement.Scale(myGraphics, glm::vec3(1000.0f, 0.001f, 1000.0f));
+
+	cucumber.Translate(myGraphics, glm::vec3(-3.0f, 2.5f, 0.0f));
+	cucumber.Translate(myGraphics, glm::vec3(0.0f, 2.5f, 4.0f));
+	cucumber.Rotate(myGraphics, glm::radians(-45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	cucumber.Scale(myGraphics, glm::vec3(4.0f, 2.0f, 1.0f));
+
+	bouncingBall.Translate(myGraphics, glm::vec3(-2.0f, 3.0f, 1.0f));
+	bouncingBall.bouncer = true;
+
+	int gap = 1;
+	for (int i = 0; i < L * 4 - 4; i++) {
+		// Bottom border
+		if (i < L) {
+			border[i].Translate(myGraphics, glm::vec3(0.0f + gap * i, 0.5f, 0.0f));
+			border[i].fillColor = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
+		}
+		// Left border
+		else if (i < L * 2 - 2) {
+			border[i].Translate(myGraphics, glm::vec3(0.0f + (L - 1) * gap, 0.5f, 0.0f + gap * (i - L + 1)));
+			border[i].fillColor = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
+		}
+		// Top border
+		else if (i < L * 3 - 2) {
+			border[i].Translate(myGraphics, glm::vec3(0.0f + gap * (i - L * 2 + 2), 0.5f, 0.0f + gap * (L - 1)));
+			border[i].fillColor = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);
+		}
+		// Right border
+		else {
+			border[i].Translate(myGraphics, glm::vec3(0.0f, 0.5f, 0.0f + gap * (i - L * 3 + 3)));
+			border[i].fillColor = glm::vec4(0.5f, 0.5f, 0.5f, 1.0f);
+		}
+	}
+	emitter.Init(myGraphics, glm::vec3(0.0f, 2.0f, 0.0f));
+}
+
+void refresh() {
+	pavement.Refresh(myGraphics);
+	cucumber.Refresh(myGraphics);
+	bouncingBall.Refresh(myGraphics);
+	for (int i = 0; i < size(border); i++) {
+		border[i].Refresh(myGraphics);
+	}
+	emitter.Refresh(myGraphics);
 }
 
 void updateCamera() {
@@ -196,59 +247,24 @@ void updateSceneElements() {
 
 	// MY OBJECTS
 	if (t == 0) {
-		myFloor.Scale(myGraphics, glm::vec3(1000.0f, 0.001f, 1000.0f));
-
-		mySphere.Translate(myGraphics, glm::vec3(-2.0f, 2.5f, 0.0f));
-		mySphere.Translate(myGraphics, glm::vec3(0.0f, 2.5f, -5.0f));
-		mySphere.Rotate(myGraphics, glm::radians(-45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
-		mySphere.Scale(myGraphics, glm::vec3(4.0f, 2.0f, 1.0f));
-
-		int gap = 1;
-		for (int i = 0; i < L * 4 - 4; i++) {
-			// Bottom border
-			if (i < L) {
-				border[i].Translate(myGraphics, glm::vec3(0.0f + gap * i, 0.5f, 0.0f));
-				border[i].fillColor = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
-			}
-			// Left border
-			else if (i < L * 2 - 2) {
-				border[i].Translate(myGraphics, glm::vec3(0.0f + (L - 1) * gap, 0.5f, 0.0f + gap * (i - L + 1)));
-				border[i].fillColor = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
-			}
-			// Top border
-			else if (i < L * 3 - 2) {
-				border[i].Translate(myGraphics, glm::vec3(0.0f + gap * (i - L * 2 + 2), 0.5f, 0.0f + gap * (L - 1)));
-				border[i].fillColor = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);
-			}
-			// Right border
-			else {
-				border[i].Translate(myGraphics, glm::vec3(0.0f, 0.5f, 0.0f + gap * (i - L * 3 + 3)));
-				border[i].fillColor = glm::vec4(0.5f, 0.5f, 0.5f, 1.0f);
-			}
-		}
-		emitter.Init(myGraphics, glm::vec3(0.0f, 2.0f, 0.0f));
+		init();
 	}
 	
 	else {
 		// If an object is not on the floor fall
-		if (!mySphere.CheckCollision(myFloor)) {
-			mySphere.Accelerate(g, 0.001f);
-			mySphere.Translate(myGraphics, mySphere.velocity);
+		if (!cucumber.CheckCollision(pavement)) {
+			//cucumber.Gravity();
+			cucumber.Translate(myGraphics, cucumber.velocity);
 		}
 		else {
-			mySphere.velocity = glm::vec3(0.0f, 0.0f, 0.0f);
+			cucumber.velocity = glm::vec3(0.0f, 0.0f, 0.0f);
 		}
 	}
-	if (t == 0 || t == 20) {
+	if (t == 0 || t == 100 || t == 300) {
 		emitter.Shoot();
 	}
-	// REFRESH OBJECTS
-	myFloor.Refresh(myGraphics);
-	mySphere.Refresh(myGraphics);
-	for (int i = 0; i < size(border); i++) {
-		border[i].Refresh(myGraphics);
-	}
-	emitter.Refresh(myGraphics);
+	
+	refresh();
 
 	t++; // increment movement variable
 
@@ -261,13 +277,17 @@ void renderScene() {
 	myGraphics.ClearViewport();
 
 	// Draw objects in screen
-	if (myFloor.visible) {
-		myFloor.Draw();
-		myFloor.boundingBox.Draw();
+	if (pavement.visible) {
+		pavement.Draw();
+		pavement.boundingBox.Draw();
 	}
-	if (mySphere.visible) {
-		mySphere.Draw();
-		mySphere.boundingBox.Draw();
+	if (cucumber.visible) {
+		cucumber.Draw();
+		cucumber.boundingBox.Draw();
+	}
+	if (bouncingBall.visible) {
+		bouncingBall.Draw();
+		bouncingBall.boundingBox.Draw();
 	}
 	for (int i = 0; i < L * 4 - 4; i++) {
 		if (border[i].visible) {

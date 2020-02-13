@@ -1,10 +1,12 @@
 #include "shapes.h"
 #include <iostream>
 #include <sstream>
-
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 #include <glm/glm.hpp>
+
+const float T = 0.001f;
+const glm::vec3 G = glm::vec3(0.0f, -9.81f, 0.0f);
 
 Shapes::Shapes() {
 
@@ -313,8 +315,10 @@ bool Collidable::CheckCollision(Collidable c) {
 		&& (this->min[0] <= c.max[0]) && (this->min[1] <= c.max[1]) && (this->min[2] <= c.max[2]);
 }
 
-void Collidable::Accelerate(glm::vec3 a, float t) {
-	this->velocity = this->velocity + a * t;
+void Collidable::Gravity() {
+	if (this->mass > 0.0f && this->mass < INFINITY) {
+		this->velocity = this->velocity + G * T;
+	}
 }
 
 Cube::Cube() {
@@ -869,11 +873,13 @@ Sphere::Sphere(float mass) {
 Particle::Particle() {
 	Sphere();
 	this->mass = 0.0f;
+	this->ttl = 0;
 }
 
-Particle::Particle(float ttl) {
-	Particle();
-	this->ttl = ttl;
+Particle::Particle(float mass) {
+	Sphere();
+	this->mass = mass;
+	this->ttl = 0;
 }
 
 Particle::~Particle() {
