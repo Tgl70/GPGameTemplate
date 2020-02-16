@@ -61,7 +61,9 @@ public:
 	
 	//COLLISIONS
 	bool CheckCollision(Collidable c);
-	//void Collide();
+	int CollisionPlane(Collidable c);
+	void CollideInfinity(Collidable c);
+	void Collide(Collidable c);
 
 	//PHYSICS
 	void Gravity();

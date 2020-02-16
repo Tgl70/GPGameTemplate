@@ -20,10 +20,10 @@ public:
 	void Draw();
 	void Refresh(Graphics graphics);
 	void Shoot(Graphics graphics);
+	Cube placeholder;
 
 private:
 	vector<Particle> particles;
-	Cube placeholder;
 	int n_particles;
 };
 

@@ -34,6 +34,7 @@ Emitter::~Emitter() {
 }
 
 void Emitter::Init(Graphics graphics, glm::vec3 position) {
+	this->placeholder.mass = INFINITY;
 	this->placeholder.Translate(graphics, position);
 	this->placeholder.Scale(graphics, glm::vec3(0.04f, 0.04f, 0.04f));
 }

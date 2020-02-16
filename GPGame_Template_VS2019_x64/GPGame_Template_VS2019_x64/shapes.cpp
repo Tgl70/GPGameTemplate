@@ -315,6 +315,49 @@ bool Collidable::CheckCollision(Collidable c) {
 		&& (this->min[0] <= c.max[0]) && (this->min[1] <= c.max[1]) && (this->min[2] <= c.max[2]);
 }
 
+int Collidable::CollisionPlane(Collidable c) {
+	float diff_x = std::fmin(this->max[0] - c.min[0], c.max[0] - this->min[0]);
+	float diff_y = std::fmin(this->max[1] - c.min[1], c.max[1] - this->min[1]);
+	float diff_z = std::fmin(this->max[2] - c.min[2], c.max[2] - this->min[2]);
+	if (diff_x < diff_y && diff_x < diff_z) {
+		return 0;
+	}
+	else if (diff_y < diff_z) {
+		return 1;
+	}
+	else {
+		return 2;
+	}
+}
+
+void Collidable::CollideInfinity(Collidable c) {
+	int plane = this->CollisionPlane(c);
+	this->velocity[plane] = this->velocity[plane] - (2.0f * this->velocity[plane]);
+	this->velocity = 0.93f * this->velocity;
+	for (int i = 0; i < 3; i++) {
+		if (this->velocity[i] < 0.0001f) {
+			this->velocity[i] = 0.0f;
+		}
+	}
+}
+
+void Collidable::Collide(Collidable c) {
+	glm::vec3 v1f = ((this->mass - c.mass) / (this->mass + c.mass)) * this->velocity
+		+ ((2 * c.mass) / (this->mass + c.mass)) * c.velocity;
+	glm::vec3 v2f = ((c.mass - this->mass) / (c.mass + this->mass)) * c.velocity
+		+ ((2 * this->mass) / (c.mass + this->mass)) * this->velocity;
+	this->velocity = 0.93f * v1f;
+	c.velocity = 0.93f * v2f;
+	for (int i = 0; i < 3; i++) {
+		if (this->velocity[i] < 0.0001f) {
+			this->velocity[i] = 0.0f;
+		}
+		if (c.velocity[i] < 0.0001f) {
+			c.velocity[i] = 0.0f;
+		}
+	}
+}
+
 void Collidable::Gravity() {
 	if (this->mass > 0.0f && this->mass < INFINITY) {
 		this->velocity = this->velocity + G * T;

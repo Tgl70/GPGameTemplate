@@ -61,6 +61,8 @@ Sphere		bouncingBall;
 Cube		border[L*4-4];
 Emitter		emitter;
 
+vector<Collidable*> immovableObjects;
+vector<Collidable*> movableObjects;
 // Some global variable to do the animation.
 int t = 0;            // Global variable for frame count
 glm::vec3 g = glm::vec3(0.0f, -9.81f, 0.0f);			// gravity constant
@@ -73,7 +75,7 @@ int main()
 
 	startup();										// Setup all necessary information for startup (aka. load texture, shaders, models, etc).
 
-
+	init();
 
 	// MAIN LOOP run until the window is closed
 	while (!quit) {
@@ -149,16 +151,20 @@ void startup() {
 void init() {
 	pavement.mass = INFINITY;
 	pavement.Scale(myGraphics, glm::vec3(1000.0f, 0.001f, 1000.0f));
+	immovableObjects.push_back(&pavement);
 
 	cucumber.mass = 1.0f;
-	cucumber.Translate(myGraphics, glm::vec3(-3.0f, 2.5f, 0.0f));
-	cucumber.Translate(myGraphics, glm::vec3(0.0f, 2.5f, 4.0f));
+	cucumber.Translate(myGraphics, glm::vec3(-3.0f, 5.0f, 4.0f));
 	cucumber.Rotate(myGraphics, glm::radians(-45.0f), glm::vec3(0.0f, 1.0f, 0.0f));
 	cucumber.Scale(myGraphics, glm::vec3(4.0f, 2.0f, 1.0f));
+	cucumber.bouncer = true;
+	movableObjects.push_back(&cucumber);
 
 	bouncingBall.mass = 1.0f;
 	bouncingBall.Translate(myGraphics, glm::vec3(-2.0f, 3.0f, 1.0f));
 	bouncingBall.bouncer = true;
+	bouncingBall.velocity = bouncingBall.velocity + glm::vec3(0.0f, 0.0f, 0.04f);
+	movableObjects.push_back(&bouncingBall);
 
 	int gap = 1;
 	for (int i = 0; i < L * 4 - 4; i++) {
@@ -183,8 +189,10 @@ void init() {
 			border[i].Translate(myGraphics, glm::vec3(0.0f, 0.5f, 0.0f + gap * (i - L * 3 + 3)));
 			border[i].fillColor = glm::vec4(0.5f, 0.5f, 0.5f, 1.0f);
 		}
+		immovableObjects.push_back(&border[i]);
 	}
 	emitter.Init(myGraphics, glm::vec3(0.0f, 2.0f, 0.0f));
+	immovableObjects.push_back(&emitter.placeholder);	
 }
 
 void refresh() {
@@ -240,6 +248,39 @@ void updateCamera() {
 	}
 }
 
+void movementLogic() {
+
+	for (int i = 0; i < movableObjects.size(); i++) {
+		bool gravity_enabled = true;
+		for (vector<Collidable*>::iterator it2 = immovableObjects.begin(); it2 != immovableObjects.end(); ++it2) {
+			if ((*movableObjects[i]).CheckCollision(**it2)) {
+				if ((*movableObjects[i]).CollisionPlane(**it2) == 1) {
+					gravity_enabled = false;
+				}
+				if ((*movableObjects[i]).bouncer) {
+					(*movableObjects[i]).CollideInfinity(**it2);
+				}
+				else {
+					(*movableObjects[i]).velocity = glm::vec3(0.0f, 0.0f, 0.0f);
+				}
+			}
+		}
+		for (int j = i + 1; j < movableObjects.size(); j++) {
+			if ((*movableObjects[i]).CheckCollision(*movableObjects[j]) && (&*movableObjects[i]) != (&*movableObjects[j])) {
+				// This is to prevent 2 objects to enter each other
+				if ((*movableObjects[i]).CollisionPlane(*movableObjects[j]) == 1 && (*movableObjects[i]).min[1] > (*movableObjects[j]).min[1]) {
+					gravity_enabled = false;
+				}
+				(*movableObjects[i]).Collide(*movableObjects[j]);
+			}
+		}
+		if (gravity_enabled) {
+			(*movableObjects[i]).Gravity();
+		}
+		(*movableObjects[i]).Translate(myGraphics, (*movableObjects[i]).velocity);
+	}
+}
+
 void updateSceneElements() {
 
 	glfwPollEvents();                                // poll callbacks
@@ -251,24 +292,7 @@ void updateSceneElements() {
 
 	// Do not forget your ( T * R * S ) http://www.opengl-tutorial.org/beginners-tutorials/tutorial-3-matrices/
 
-	// MY OBJECTS
-	if (t == 0) {
-		init();
-	}
-	
-	else {
-		// If an object is not on the floor fall
-		if (!cucumber.CheckCollision(pavement)) {
-			cucumber.Gravity();
-			cucumber.Translate(myGraphics, cucumber.velocity);
-		}
-		else {
-			cucumber.velocity = glm::vec3(0.0f, 0.0f, 0.0f);
-		}
-	}
-	if (t % 150 == 0) {
-		emitter.Shoot(myGraphics);
-	}
+	movementLogic();
 	
 	refresh();
 
@@ -328,6 +352,11 @@ void onKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mo
 	// If exit key pressed.
 	if (key == GLFW_KEY_ESCAPE && action == GLFW_PRESS)
 		glfwSetWindowShouldClose(window, GLFW_TRUE);
+
+	// IF E button is pressed then shoot
+	if (keyStatus[GLFW_KEY_E]) {
+		emitter.Shoot(myGraphics);
+	}
 }
 
 void onMouseButtonCallback(GLFWwindow* window, int button, int action, int mods) {
