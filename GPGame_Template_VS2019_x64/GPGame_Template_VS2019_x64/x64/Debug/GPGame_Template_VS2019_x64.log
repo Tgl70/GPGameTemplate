@@ -1,3 +1,4 @@
 ﻿  GPGame_Template_VS2019_x64.cpp
-LINK : warning LNK4098: la libreria predefinita 'MSVCRT' Þ in conflitto con l'utilizzo di altre librerie; usare /NODEFAULTLIB:libreria
+  flockManager.cpp
+  Generazione del codice in corso...
   GPGame_Template_VS2019_x64.vcxproj -> D:\Heriot-Watt\Computer Games Programming\Template\GPGameTemplate\GPGame_Template_VS2019_x64\x64\Debug\GPGame_Template_VS2019_x64.exe

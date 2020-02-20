@@ -1,9 +1,10 @@
 #include "emitter.h"
+#include <time.h>
 
 const float PI = 3.1415927f;
 // (1.0, 200) for (0.3 dimension) -- (0.45, 100) for (0.8 dimension)
-const float MAGNITUDE = 0.45f;
-const float TTL = 100;
+const float MAGNITUDE = 0.3f;
+const float TTL = 200;
 
 Emitter::Emitter() {
 
@@ -59,6 +60,10 @@ void Emitter::Refresh(Graphics graphics) {
 			particles[i].visible = false;
 		}
 		else {
+			// This is to prevent that the particles block each other inside the emitter
+			if (particles[i].ttl == TTL - 5) {
+				particles[i].visible = true;
+			}
 			particles[i].Gravity();
 			particles[i].Translate(graphics, particles[i].velocity);
 			particles[i].ttl -= 1;
@@ -69,12 +74,12 @@ void Emitter::Refresh(Graphics graphics) {
 }
 
 void Emitter::Shoot(Graphics graphics) {
+	srand((unsigned) time(0));
 	for (int i = 0; i < n_particles; i++) {
 		float alfa = (i * 360.0f / n_particles) * PI / 180.0f; // Converted the angle in Radians
-		particles[i].visible = true;
-		particles[i].position_memory = placeholder.position_memory;
-		particles[i].Scale(graphics, glm::vec3(0.8f, 0.8f, 0.8f));
-		particles[i].velocity = glm::vec3(MAGNITUDE * cos(alfa), MAGNITUDE * 1.0f, MAGNITUDE * sin(alfa));
-		particles[i].ttl = TTL;
+		float r = (float)(rand()) / ((float)(RAND_MAX));
+		if (particles[i].ttl == 0 && r > 0.75f) {
+			particles[i].Shoot(graphics, placeholder.position_memory, alfa, MAGNITUDE, TTL);
+		}
 	}
 }

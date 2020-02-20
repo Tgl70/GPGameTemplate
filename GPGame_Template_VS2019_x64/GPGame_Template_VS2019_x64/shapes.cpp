@@ -334,11 +334,11 @@ void Collidable::CollideInfinity(Collidable c) {
 	int plane = this->CollisionPlane(c);
 	this->velocity[plane] = this->velocity[plane] - (2.0f * this->velocity[plane]);
 	this->velocity = 0.93f * this->velocity;
-	for (int i = 0; i < 3; i++) {
-		if (this->velocity[i] < 0.0001f) {
-			this->velocity[i] = 0.0f;
-		}
-	}
+	//for (int i = 0; i < 3; i++) {
+		//if (this->velocity[i] < 0.00000000000000000000001f && this->velocity[i] > 0.0f) {
+			//this->velocity[i] = 0.0f;
+		//}
+	//}
 }
 
 void Collidable::Collide(Collidable c) {
@@ -400,6 +400,18 @@ Cube::Cube(float mass) {
 
 Cube::~Cube() {
 
+}
+
+Boid::Boid() {
+	Cube();
+}
+
+Boid::~Boid() {
+
+}
+
+glm::vec3 Boid::GetPosition() {
+	return glm::vec3(position_memory[3][0], position_memory[3][1], position_memory[3][2]);
 }
 
 Sphere::Sphere() {
@@ -921,6 +933,14 @@ Particle::Particle() {
 
 Particle::~Particle() {
 
+}
+
+void Particle::Shoot(Graphics graphics, glm::mat4 starting_point, float alfa, float magnitude, int ttl) {
+	this->position_memory = starting_point;
+	this->Scale(graphics, glm::vec3(0.8f, 0.8f, 0.8f));
+	this->velocity = glm::vec3(magnitude * cos(alfa), magnitude * 1.5f, magnitude * sin(alfa));
+	this->ttl = ttl;
+	this->fillColor = glm::vec4(cos(alfa), 1.0f, sin(alfa), 1.0f);
 }
 
 Arrow::Arrow() {

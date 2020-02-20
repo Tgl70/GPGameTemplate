@@ -25,6 +25,7 @@ using namespace std;
 #include "graphics.h"
 #include "shapes.h"
 #include "emitter.h"
+#include "flockManager.h"
 
 // MAIN FUNCTIONS
 void startup();
@@ -53,12 +54,17 @@ Graphics    myGraphics;        // Runing all the graphics in this object
 
 // OBJECTS
 const int L = 20; // Number of cubes per side in the border
-const int	N_PARTICLES = 20;
+const int	N_PARTICLES = 30;
+const int FLOCK_SIZE = 20;
+const int OBSTACLES_SIZE = 30;
+const int SHOOT_LAST = 150;
+int shoot_timer = 0;
 
 Cube        pavement;
 Sphere      cucumber;
 Sphere		bouncingBall;
 Cube		border[L*4-4];
+FlockManager flockManager;
 Emitter		emitter;
 
 vector<Collidable*> immovableObjects;
@@ -142,6 +148,8 @@ void startup() {
 		border[i] = cube;
 	}
 
+	flockManager = FlockManager(myGraphics, FLOCK_SIZE, OBSTACLES_SIZE);
+
 	emitter = Emitter(N_PARTICLES);
 
 	// Optimised Graphics
@@ -150,7 +158,7 @@ void startup() {
 
 void init() {
 	pavement.mass = INFINITY;
-	pavement.Scale(myGraphics, glm::vec3(1000.0f, 0.001f, 1000.0f));
+	pavement.Scale(myGraphics, glm::vec3(1000.0f, 1.0f, 1000.0f));
 	immovableObjects.push_back(&pavement);
 
 	cucumber.mass = 1.0f;
@@ -171,28 +179,43 @@ void init() {
 		border[i].mass = INFINITY;
 		// Bottom border
 		if (i < L) {
-			border[i].Translate(myGraphics, glm::vec3(0.0f + gap * i, 0.5f, 0.0f));
+			border[i].Translate(myGraphics, glm::vec3(0.0f + gap * i, 1.0f, 0.0f));
 			border[i].fillColor = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
 		}
 		// Left border
 		else if (i < L * 2 - 2) {
-			border[i].Translate(myGraphics, glm::vec3(0.0f + (L - 1) * gap, 0.5f, 0.0f + gap * (i - L + 1)));
+			border[i].Translate(myGraphics, glm::vec3(0.0f + (L - 1) * gap, 1.0f, 0.0f + gap * (i - L + 1)));
 			border[i].fillColor = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
 		}
 		// Top border
 		else if (i < L * 3 - 2) {
-			border[i].Translate(myGraphics, glm::vec3(0.0f + gap * (i - L * 2 + 2), 0.5f, 0.0f + gap * (L - 1)));
+			border[i].Translate(myGraphics, glm::vec3(0.0f + gap * (i - L * 2 + 2), 1.0f, 0.0f + gap * (L - 1)));
 			border[i].fillColor = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);
 		}
 		// Right border
 		else {
-			border[i].Translate(myGraphics, glm::vec3(0.0f, 0.5f, 0.0f + gap * (i - L * 3 + 3)));
+			border[i].Translate(myGraphics, glm::vec3(0.0f, 1.0f, 0.0f + gap * (i - L * 3 + 3)));
 			border[i].fillColor = glm::vec4(0.5f, 0.5f, 0.5f, 1.0f);
 		}
 		immovableObjects.push_back(&border[i]);
 	}
-	emitter.Init(myGraphics, glm::vec3(0.0f, 2.0f, 0.0f));
-	immovableObjects.push_back(&emitter.placeholder);	
+
+	// Put boids in movable objects vector
+	for (int i = 0; i < FLOCK_SIZE; i++) {
+		movableObjects.push_back(&flockManager.flock[i]);
+	}
+	// Put obstacles in immovable objects vector
+	for (int i = 0; i < OBSTACLES_SIZE; i++) {
+		immovableObjects.push_back(&flockManager.obstacles[i]);
+	}
+	immovableObjects.push_back(&flockManager.target);
+
+	emitter.Init(myGraphics, glm::vec3(-2.0f, 1.0f, 0.0f));
+	immovableObjects.push_back(&emitter.placeholder);
+	for (int i = 0; i < N_PARTICLES; i++) {
+		emitter.particles[i].bouncer = true;
+		movableObjects.push_back(&emitter.particles[i]);
+	}
 }
 
 void refresh() {
@@ -202,6 +225,7 @@ void refresh() {
 	for (int i = 0; i < size(border); i++) {
 		border[i].Refresh(myGraphics);
 	}
+	flockManager.Refresh(myGraphics);
 	emitter.Refresh(myGraphics);
 }
 
@@ -251,33 +275,35 @@ void updateCamera() {
 void movementLogic() {
 
 	for (int i = 0; i < movableObjects.size(); i++) {
-		bool gravity_enabled = true;
-		for (vector<Collidable*>::iterator it2 = immovableObjects.begin(); it2 != immovableObjects.end(); ++it2) {
-			if ((*movableObjects[i]).CheckCollision(**it2)) {
-				if ((*movableObjects[i]).CollisionPlane(**it2) == 1) {
-					gravity_enabled = false;
-				}
-				if ((*movableObjects[i]).bouncer) {
-					(*movableObjects[i]).CollideInfinity(**it2);
-				}
-				else {
-					(*movableObjects[i]).velocity = glm::vec3(0.0f, 0.0f, 0.0f);
+		if(movableObjects[i]->visible) {
+			bool gravity_enabled = true;
+			for (vector<Collidable*>::iterator it2 = immovableObjects.begin(); it2 != immovableObjects.end(); ++it2) {
+				if ((*movableObjects[i]).CheckCollision(**it2)) {
+					if ((*movableObjects[i]).CollisionPlane(**it2) == 1) {
+						gravity_enabled = false;
+					}
+					if ((*movableObjects[i]).bouncer) {
+						(*movableObjects[i]).CollideInfinity(**it2);
+					}
+					else {
+						(*movableObjects[i]).velocity = glm::vec3(0.0f, 0.0f, 0.0f);
+					}
 				}
 			}
-		}
-		for (int j = i + 1; j < movableObjects.size(); j++) {
-			if ((*movableObjects[i]).CheckCollision(*movableObjects[j]) && (&*movableObjects[i]) != (&*movableObjects[j])) {
-				// This is to prevent 2 objects to enter each other
-				if ((*movableObjects[i]).CollisionPlane(*movableObjects[j]) == 1 && (*movableObjects[i]).min[1] > (*movableObjects[j]).min[1]) {
-					gravity_enabled = false;
+			for (int j = i + 1; j < movableObjects.size(); j++) {
+				if ((*movableObjects[i]).CheckCollision(*movableObjects[j]) && (&*movableObjects[i]) != (&*movableObjects[j])) {
+					// This is to prevent 2 objects to enter each other
+					if ((*movableObjects[i]).CollisionPlane(*movableObjects[j]) == 1 && (*movableObjects[i]).min[1] > (*movableObjects[j]).min[1]) {
+						gravity_enabled = false;
+					}
+					(*movableObjects[i]).Collide(*movableObjects[j]);
 				}
-				(*movableObjects[i]).Collide(*movableObjects[j]);
 			}
+			if (gravity_enabled) {
+				(*movableObjects[i]).Gravity();
+			}
+			(*movableObjects[i]).Translate(myGraphics, (*movableObjects[i]).velocity);
 		}
-		if (gravity_enabled) {
-			(*movableObjects[i]).Gravity();
-		}
-		(*movableObjects[i]).Translate(myGraphics, (*movableObjects[i]).velocity);
 	}
 }
 
@@ -291,6 +317,11 @@ void updateSceneElements() {
 	lastTime = currentTime;                            // Save for next frame calculations.
 
 	// Do not forget your ( T * R * S ) http://www.opengl-tutorial.org/beginners-tutorials/tutorial-3-matrices/
+
+	if (shoot_timer > 0) {
+		shoot_timer--;
+		emitter.Shoot(myGraphics);
+	}
 
 	movementLogic();
 	
@@ -325,6 +356,7 @@ void renderScene() {
 			border[i].boundingBox.Draw();
 		}
 	}
+	flockManager.Draw();
 	emitter.Draw();
 }
 
@@ -355,7 +387,12 @@ void onKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mo
 
 	// IF E button is pressed then shoot
 	if (keyStatus[GLFW_KEY_E]) {
-		emitter.Shoot(myGraphics);
+		shoot_timer = SHOOT_LAST;
+	}
+
+	// IF Q button is pressed then shoot
+	if (keyStatus[GLFW_KEY_Q]) {
+		flockManager.GenerateFlock(myGraphics);
 	}
 }
 

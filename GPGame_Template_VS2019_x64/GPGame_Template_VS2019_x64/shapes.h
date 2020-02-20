@@ -87,6 +87,13 @@ public:
 	~Cube();
 };
 
+class Boid : public Cube {
+public:
+	Boid();
+	~Boid();
+	glm::vec3 GetPosition();
+};
+
 class Sphere : public Collidable {
 public:
 	Sphere();
@@ -98,6 +105,7 @@ class Particle : public Sphere {
 public:
 	Particle();
 	~Particle();
+	void Shoot(Graphics graphics, glm::mat4 starting_point, float alfa, float magnitude, int ttl);
 	int ttl; // Time To Live
 };
 

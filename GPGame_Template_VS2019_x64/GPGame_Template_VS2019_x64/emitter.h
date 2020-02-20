@@ -21,9 +21,9 @@ public:
 	void Refresh(Graphics graphics);
 	void Shoot(Graphics graphics);
 	Cube placeholder;
+	vector<Particle> particles;
 
 private:
-	vector<Particle> particles;
 	int n_particles;
 };
 
