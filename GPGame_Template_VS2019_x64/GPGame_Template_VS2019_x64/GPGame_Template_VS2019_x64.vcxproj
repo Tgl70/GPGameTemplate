@@ -161,12 +161,16 @@
     <ClCompile Include="flockManager.cpp" />
     <ClCompile Include="GPGame_Template_VS2019_x64.cpp" />
     <ClCompile Include="graphics.cpp" />
+    <ClCompile Include="maze.cpp" />
+    <ClCompile Include="mazeManager.cpp" />
     <ClCompile Include="shapes.cpp" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="emitter.h" />
     <ClInclude Include="flockManager.h" />
     <ClInclude Include="graphics.h" />
+    <ClInclude Include="maze.h" />
+    <ClInclude Include="mazeManager.h" />
     <ClInclude Include="shapes.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

@@ -26,6 +26,7 @@ using namespace std;
 #include "shapes.h"
 #include "emitter.h"
 #include "flockManager.h"
+#include "mazeManager.h"
 
 // MAIN FUNCTIONS
 void startup();
@@ -63,7 +64,7 @@ int shoot_timer = 0;
 Cube        pavement;
 Sphere      cucumber;
 Sphere		bouncingBall;
-Cube		border[L*4-4];
+MazeManager maze;
 FlockManager flockManager;
 Emitter		emitter;
 
@@ -141,12 +142,7 @@ void startup() {
 	pavement.fillColor = glm::vec4(130.0f / 255.0f, 96.0f / 255.0f, 61.0f / 255.0f, 1.0f);    // Sand Colour
 	pavement.lineColor = glm::vec4(130.0f / 255.0f, 96.0f / 255.0f, 61.0f / 255.0f, 1.0f);    // Sand again
 
-	for (int i = 0; i < L * 4 - 4; i++) {
-		Cube cube;
-		cube.Load();
-		cube.boundingBox.Load();
-		border[i] = cube;
-	}
+	maze = MazeManager(myGraphics, L);
 
 	flockManager = FlockManager(myGraphics, FLOCK_SIZE, OBSTACLES_SIZE);
 
@@ -174,31 +170,11 @@ void init() {
 	bouncingBall.velocity = bouncingBall.velocity + glm::vec3(0.0f, 0.0f, 0.04f);
 	movableObjects.push_back(&bouncingBall);
 
-	int gap = 1;
+	maze.Init(myGraphics);
 	for (int i = 0; i < L * 4 - 4; i++) {
-		border[i].mass = INFINITY;
-		// Bottom border
-		if (i < L) {
-			border[i].Translate(myGraphics, glm::vec3(0.0f + gap * i, 1.0f, 0.0f));
-			border[i].fillColor = glm::vec4(1.0f, 0.0f, 0.0f, 1.0f);
-		}
-		// Left border
-		else if (i < L * 2 - 2) {
-			border[i].Translate(myGraphics, glm::vec3(0.0f + (L - 1) * gap, 1.0f, 0.0f + gap * (i - L + 1)));
-			border[i].fillColor = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);
-		}
-		// Top border
-		else if (i < L * 3 - 2) {
-			border[i].Translate(myGraphics, glm::vec3(0.0f + gap * (i - L * 2 + 2), 1.0f, 0.0f + gap * (L - 1)));
-			border[i].fillColor = glm::vec4(0.0f, 0.0f, 1.0f, 1.0f);
-		}
-		// Right border
-		else {
-			border[i].Translate(myGraphics, glm::vec3(0.0f, 1.0f, 0.0f + gap * (i - L * 3 + 3)));
-			border[i].fillColor = glm::vec4(0.5f, 0.5f, 0.5f, 1.0f);
-		}
-		immovableObjects.push_back(&border[i]);
+		immovableObjects.push_back(&maze.walls[i]);
 	}
+	movableObjects.push_back(&maze.agent);
 
 	// Put boids in movable objects vector
 	for (int i = 0; i < FLOCK_SIZE; i++) {
@@ -222,9 +198,7 @@ void refresh() {
 	pavement.Refresh(myGraphics);
 	cucumber.Refresh(myGraphics);
 	bouncingBall.Refresh(myGraphics);
-	for (int i = 0; i < size(border); i++) {
-		border[i].Refresh(myGraphics);
-	}
+	maze.Refresh(myGraphics);
 	flockManager.Refresh(myGraphics);
 	emitter.Refresh(myGraphics);
 }
@@ -350,12 +324,7 @@ void renderScene() {
 		bouncingBall.Draw();
 		bouncingBall.boundingBox.Draw();
 	}
-	for (int i = 0; i < L * 4 - 4; i++) {
-		if (border[i].visible) {
-			border[i].Draw();
-			border[i].boundingBox.Draw();
-		}
-	}
+	maze.Draw();
 	flockManager.Draw();
 	emitter.Draw();
 }
@@ -390,9 +359,19 @@ void onKeyCallback(GLFWwindow* window, int key, int scancode, int action, int mo
 		shoot_timer = SHOOT_LAST;
 	}
 
-	// IF Q button is pressed then shoot
+	// IF Q button is pressed then generate flock
 	if (keyStatus[GLFW_KEY_Q]) {
 		flockManager.GenerateFlock(myGraphics);
+	}
+
+	// IF R button is pressed then generate maze
+	if (keyStatus[GLFW_KEY_R]) {
+		maze.GenerateMaze(myGraphics);
+	}
+
+	// IF F button is pressed then play the maze
+	if (keyStatus[GLFW_KEY_F]) {
+		maze.SolveMaze();
 	}
 }
 
