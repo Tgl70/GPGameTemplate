@@ -54,6 +54,12 @@ MazeManager::MazeManager(Graphics graphics, int side_lenght) {
 	this->target = target;
 	this->target.visible = false;
 
+	Emitter e = Emitter(10);
+	e.Init(graphics, glm::vec3(side_lenght - 1 - GAP, 2.0f, side_lenght - 1 - GAP));
+
+	this->e = e;
+	this->e.placeholder.visible = false;
+
 	for (int i = 0; i < this->side_lenght * 4 - 4; i++) {
 		Cube cube;
 		cube.Load();
@@ -98,6 +104,9 @@ void MazeManager::Refresh(Graphics graphics) {
 		agent.Translate(graphics, this->maze_path.back());
 		this->maze_path.pop_back();
 	}
+	if (agent.position_memory[3][0] == target.position_memory[3][0] && agent.position_memory[3][2] == target.position_memory[3][2]) {
+		e.Shoot(graphics);
+	}
 	agent.Refresh(graphics);
 	target.Refresh(graphics);
 	for (int i = 0; i < this->side_lenght * 4 - 4; i++) {
@@ -106,6 +115,7 @@ void MazeManager::Refresh(Graphics graphics) {
 	for (int i = 0; i < obstacles.size(); i++) {
 		obstacles[i].Refresh(graphics);
 	}
+	this->e.Refresh(graphics);
 }
 
 void MazeManager::Draw() {
@@ -129,6 +139,7 @@ void MazeManager::Draw() {
 			obstacles[i].boundingBox.Draw();
 		}
 	}
+	e.Draw();
 }
 
 void MazeManager::GenerateMaze(Graphics graphics) {
@@ -161,7 +172,7 @@ void MazeManager::GenerateMaze(Graphics graphics) {
 	}
 
 	glm::mat4 agent_pos =
-		glm::translate(glm::vec3(GAP, 1.0f, GAP)) *
+		glm::translate(glm::vec3(GAP, 3.0f, GAP)) *
 		glm::scale(glm::vec3(0.5f, 1.0f, 0.5f)) *
 		glm::mat4(1.0f);
 	agent.position_memory = agent_pos;
@@ -177,6 +188,7 @@ void MazeManager::GenerateMaze(Graphics graphics) {
 	this->agent_position = Position(0, 0, 0, 0, NULL);
 	this->map = map;
 	this->target_position = Position(18, 18, 0, 0, NULL);
+	this->maze_path.clear();
 }
 
 void MazeManager::SolveMaze() {
@@ -188,6 +200,7 @@ void MazeManager::SolveMaze() {
 		int delta_i = a_star[k].i - i;
 		int delta_j = a_star[k].j - j;
 
+		this->maze_path.push_back(glm::vec3(delta_i, 0.0f, delta_j));
 		this->maze_path.push_back(glm::vec3(delta_i, 0.0f, delta_j));
 
 		i = i + delta_i;
@@ -206,11 +219,22 @@ vector<Position> MazeManager::A_Star() {
 	fringe.push_back(this->agent_position);
 
 	while (!found && fringe.size() > 0) {
-		Position p = getNextNode(fringe, closed);
-		found = Goal(p);
-		closed.push_back(p);
+		Position* p = new Position(-1, -1, 0, 0, NULL);
+		for (auto f : fringe) {
+			if (((f.cost_g + f.cost_h) < ((*p).cost_g + (*p).cost_h)) || (*p).i < 0) {
+				p->i = f.i;
+				p->j = f.j;
+				p->cost_g = f.cost_g;
+				p->cost_h = f.cost_h;
+				p->parent = f.parent;
+			}
+		}
+		fringe.erase(remove(fringe.begin(), fringe.end(), *p), fringe.end()); // remove element from fringe
+
+		found = Goal(*p);
+		closed.push_back(*p);
 		if (found) {
-			Position* current = &p;
+			Position* current = p;
 			while (current != NULL) {
 				path.push_back(*current);
 				current = current->parent;
@@ -220,7 +244,7 @@ vector<Position> MazeManager::A_Star() {
 		}
 		vector<Position> children;
 		for (int i = 0; i < 4; ++i) {
-			Position child = Position(p.i + moves[i].first, p.j + moves[i].second, 0, 0, &p);
+			Position child = Position(p->i + moves[i].first, p->j + moves[i].second, 0, 0, p);
 			if (child.i >= 0 && child.j >= 0 && child.i < side_lenght - 2 && child.j < side_lenght - 2) {
 				if (map[child.i][child.j] == 0) {
 					children.push_back(child);
@@ -264,17 +288,6 @@ bool MazeManager::isClosed(vector<Position> closed, Position p) {
 		if (closed[i] == p) return true;
 	}
 	return false;
-}
-
-Position MazeManager::getNextNode(vector<Position>& fringe, vector<Position>& closed) {
-	Position p = fringe[0];
-	for (int i = 0; i < fringe.size(); ++i) {
-		if ((fringe[i].cost_g + fringe[i].cost_h) < (p.cost_g + p.cost_h)) {
-			p = fringe[i];
-		}
-	}
-	fringe.erase(remove(fringe.begin(), fringe.end(), p), fringe.end()); // remove element from fringe
-	return p;
 }
 
 bool MazeManager::Goal(Position p) {

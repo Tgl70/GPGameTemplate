@@ -192,6 +192,12 @@ void init() {
 		emitter.particles[i].bouncer = true;
 		movableObjects.push_back(&emitter.particles[i]);
 	}
+
+	for (int i = 0; i < 10; i++) {
+		maze.e.particles[i].bouncer = true;
+		movableObjects.push_back(&maze.e.particles[i]);
+	}
+	
 }
 
 void refresh() {

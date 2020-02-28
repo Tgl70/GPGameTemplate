@@ -9,6 +9,7 @@
 #include "shapes.h"
 #include <glm/gtx/transform.hpp>
 #include <cmath>
+#include "emitter.h"
 using namespace std;
 
 class Position {
@@ -40,12 +41,12 @@ public:
 	bool isClosed(vector<Position> closed, Position p);
 	bool Goal(Position p);
 	int Manhattan(Position p, Position g);
-	Position getNextNode(vector<Position>& fringe, vector<Position>& closed);
 
 	Cylinder agent;
 	Cube target;
 	vector<Cube> walls;
 	vector<Cube> obstacles;
+	Emitter e;
 
 private:
 	int side_lenght;
