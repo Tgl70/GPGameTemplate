@@ -12,6 +12,7 @@
 #include "emitter.h"
 using namespace std;
 
+// class to represent the cells in the maze
 class Position {
 public:
 	Position();
@@ -26,6 +27,7 @@ public:
 	Position* parent;
 };
 
+// Class to manage all the elements of the maze demo
 class MazeManager {
 public:
 	MazeManager();
@@ -42,6 +44,7 @@ public:
 	bool Goal(Position p);
 	int Manhattan(Position p, Position g);
 
+	// Maze components
 	Cylinder agent;
 	Cube target;
 	vector<Cube> walls;
@@ -49,11 +52,13 @@ public:
 	Emitter e;
 
 private:
-	int side_lenght;
-	int V;
-	Position agent_position;
-	vector<vector<int>> map;
+	int side_lenght; // lenght of the side of the maze
+	int V; //?
+
+	Position agent_position; 
 	Position target_position;
-	vector<glm::vec3> maze_path;
+
+	vector<vector<int>> map; // map of the maze
+	vector<glm::vec3> maze_path; // path to solve the maze
 };
 

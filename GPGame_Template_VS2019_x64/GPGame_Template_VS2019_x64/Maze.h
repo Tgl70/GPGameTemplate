@@ -11,6 +11,7 @@
 
 using namespace std;
 
+//Class to represent the maze
 class Maze {
 public:
 	void generate(vector<vector<int>>& map);

@@ -1,6 +1,5 @@
 #include "maze.h"
 
-
 // Definition for singly-linked list.
 void Maze::generate(vector<vector<int>>& map) {
     //U unvisited, ' ' visited
@@ -24,7 +23,7 @@ void Maze::showMaze(vector<vector<int>>& map) {
         cout << endl;
     }
 }
-//Use DFS
+//Use DFS 
 void Maze::_generate(vector<vector<int>>& map, int i, int j) {
     int direct[][2] = { {0,1}, {0,-1}, {-1,0}, {1,0} };
     int visitOrder[] = { 0,1,2,3 };

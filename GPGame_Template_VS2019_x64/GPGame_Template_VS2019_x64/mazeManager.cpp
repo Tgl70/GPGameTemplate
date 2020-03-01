@@ -4,8 +4,8 @@
 
 using namespace std;
 
-const int GAP = 1;
-const pair<int, int> moves[4] = { make_pair(0, 1), make_pair(0, -1), make_pair(1, 0), make_pair(-1, 0) };
+const int GAP = 1; 
+const pair<int, int> moves[4] = { make_pair(0, 1), make_pair(0, -1), make_pair(1, 0), make_pair(-1, 0) }; // possible moves
 
 Position::Position() {
 
