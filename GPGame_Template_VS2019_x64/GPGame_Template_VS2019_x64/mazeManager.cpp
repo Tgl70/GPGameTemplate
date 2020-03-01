@@ -17,7 +17,6 @@ Position::Position(int i, int j, int cost_g, int cost_h, Position* parent) {
 	this->cost_g = cost_g;
 	this->cost_h = cost_h;
 	if (parent != NULL) {
-		//this->parent = new Position((*parent).i, (*parent).j, (*parent).cost_g, (*parent).cost_h, p);
 		this->parent = parent;
 	}
 	else {
@@ -35,12 +34,11 @@ MazeManager::MazeManager() {
 
 MazeManager::MazeManager(Graphics graphics, int side_lenght) {
 	this->side_lenght = side_lenght;
-	this->V = side_lenght * side_lenght;
 
 	Cylinder agent;
 	agent.Load();
 	agent.boundingBox.Load();
-	agent.mass = 5.0f;
+	agent.mass = 100.0f;
 	agent.fillColor = glm::vec4(186.0f / 255.0f, 85.0f / 255.0f, 211.0f / 255.0f, 1.0f);
 
 	this->agent = agent;
@@ -104,6 +102,7 @@ void MazeManager::Refresh(Graphics graphics) {
 		agent.Translate(graphics, this->maze_path.back());
 		this->maze_path.pop_back();
 	}
+	// If the agent is arrived the emitter shoots
 	if (agent.position_memory[3][0] == target.position_memory[3][0] && agent.position_memory[3][2] == target.position_memory[3][2]) {
 		e.Shoot(graphics);
 	}
@@ -191,6 +190,7 @@ void MazeManager::GenerateMaze(Graphics graphics) {
 	this->maze_path.clear();
 }
 
+//Method to translate the path given from the A_Star into a list of Transformation used in the Refresh
 void MazeManager::SolveMaze() {
 	vector<Position> a_star = A_Star();
 	int i = this->agent_position.i;
@@ -218,8 +218,10 @@ vector<Position> MazeManager::A_Star() {
 	bool found = false;
 	fringe.push_back(this->agent_position);
 
+	//Looping until we find the goal
 	while (!found && fringe.size() > 0) {
 		Position* p = new Position(-1, -1, 0, 0, NULL);
+		//Putting the element with less cost from the fringe into the current element (p)
 		for (auto f : fringe) {
 			if (((f.cost_g + f.cost_h) < ((*p).cost_g + (*p).cost_h)) || (*p).i < 0) {
 				p->i = f.i;
@@ -229,10 +231,13 @@ vector<Position> MazeManager::A_Star() {
 				p->parent = f.parent;
 			}
 		}
+		//Removing that element from the fringe
 		fringe.erase(remove(fringe.begin(), fringe.end(), *p), fringe.end()); // remove element from fringe
 
 		found = Goal(*p);
+		//Putting that element in the closed list
 		closed.push_back(*p);
+		//If we found the goal, calculate the path
 		if (found) {
 			Position* current = p;
 			while (current != NULL) {
@@ -242,6 +247,7 @@ vector<Position> MazeManager::A_Star() {
 			reverse(path.begin(), path.end());
 			return path;
 		}
+		//Find all children
 		vector<Position> children;
 		for (int i = 0; i < 4; ++i) {
 			Position child = Position(p->i + moves[i].first, p->j + moves[i].second, 0, 0, p);
@@ -260,6 +266,7 @@ vector<Position> MazeManager::A_Star() {
 					cl = true;
 				}
 			}
+			//If the child is not yet visited, calculate its costs
 			if (!cl) {
 				children[i].cost_g = children[i].parent->cost_g + 1;
 				children[i].cost_h = Manhattan(children[i], this->target_position);
@@ -279,10 +286,12 @@ vector<Position> MazeManager::A_Star() {
 	}
 }
 
+// Calculating the Manhattan distance
 int MazeManager::Manhattan(Position p, Position g) {
 	return g.i - p.i + g.j - p.j;
 }
 
+// Checking if a Position is in the closed list (already visited)
 bool MazeManager::isClosed(vector<Position> closed, Position p) {
 	for (int i = 0; i < closed.size(); ++i) {
 		if (closed[i] == p) return true;
@@ -290,6 +299,7 @@ bool MazeManager::isClosed(vector<Position> closed, Position p) {
 	return false;
 }
 
+// Checking if we reached the goal
 bool MazeManager::Goal(Position p) {
 	return p.i == (side_lenght - 3) && p.j == (side_lenght - 3);
 }

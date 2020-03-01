@@ -53,7 +53,6 @@ public:
 
 private:
 	int side_lenght; // lenght of the side of the maze
-	int V; //?
 
 	Position agent_position; 
 	Position target_position;

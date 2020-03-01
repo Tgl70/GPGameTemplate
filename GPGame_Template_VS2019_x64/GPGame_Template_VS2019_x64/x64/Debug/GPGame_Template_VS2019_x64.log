@@ -1,4 +1,4 @@
 ﻿  mazeManager.cpp
-D:\Heriot-Watt\Computer Games Programming\Template\GPGameTemplate\GPGame_Template_VS2019_x64\GPGame_Template_VS2019_x64\mazeManager.cpp(148,12): warning C4244: 'argomento': conversione da 'time_t' a 'unsigned int'. Possibile perdita di dati.
-D:\Heriot-Watt\Computer Games Programming\Template\GPGameTemplate\GPGame_Template_VS2019_x64\GPGame_Template_VS2019_x64\mazeManager.cpp(280): warning C4715: 'MazeManager::A_Star': non tutti i percorsi di controllo restituiscono un valore
+D:\Heriot-Watt\Computer Games Programming\Template\GPGameTemplate\GPGame_Template_VS2019_x64\GPGame_Template_VS2019_x64\mazeManager.cpp(146,12): warning C4244: 'argomento': conversione da 'time_t' a 'unsigned int'. Possibile perdita di dati.
+D:\Heriot-Watt\Computer Games Programming\Template\GPGameTemplate\GPGame_Template_VS2019_x64\GPGame_Template_VS2019_x64\mazeManager.cpp(278): warning C4715: 'MazeManager::A_Star': non tutti i percorsi di controllo restituiscono un valore
   GPGame_Template_VS2019_x64.vcxproj -> D:\Heriot-Watt\Computer Games Programming\Template\GPGameTemplate\GPGame_Template_VS2019_x64\x64\Debug\GPGame_Template_VS2019_x64.exe

@@ -128,7 +128,7 @@ void startup() {
 	myGraphics.aspect = (float)myGraphics.windowWidth / (float)myGraphics.windowHeight;
 	myGraphics.proj_matrix = glm::perspective(glm::radians(50.0f), myGraphics.aspect, 0.1f, 1000.0f);
 
-	// Load Geometry examples
+	// Load our objects
 	cucumber.Load();
 	cucumber.boundingBox.Load();
 	cucumber.fillColor = glm::vec4(0.0f, 1.0f, 0.0f, 1.0f);    // You can change the shape fill colour, line colour or linewidth
@@ -152,6 +152,7 @@ void startup() {
 	myGraphics.SetOptimisations();        // Cull and depth testing
 }
 
+//Setting mass, initial position and filling the lists of movable and immovable objects
 void init() {
 	pavement.mass = INFINITY;
 	pavement.Scale(myGraphics, glm::vec3(1000.0f, 1.0f, 1000.0f));
@@ -200,6 +201,7 @@ void init() {
 	
 }
 
+//Refreshing all our objects
 void refresh() {
 	pavement.Refresh(myGraphics);
 	cucumber.Refresh(myGraphics);
@@ -252,24 +254,31 @@ void updateCamera() {
 	}
 }
 
+//Calculating the next Transformation for all movable objects
+//Here we calculate gravity and collisions
 void movementLogic() {
 
 	for (int i = 0; i < movableObjects.size(); i++) {
 		if(movableObjects[i]->visible) {
 			bool gravity_enabled = true;
+			//Checking collisions with immovable objects
 			for (vector<Collidable*>::iterator it2 = immovableObjects.begin(); it2 != immovableObjects.end(); ++it2) {
 				if ((*movableObjects[i]).CheckCollision(**it2)) {
+					//If the collision is parallel to the terrain we stop the gravity
 					if ((*movableObjects[i]).CollisionPlane(**it2) == 1) {
 						gravity_enabled = false;
 					}
+					//If our object can bounce we calculate the new velocity
 					if ((*movableObjects[i]).bouncer) {
 						(*movableObjects[i]).CollideInfinity(**it2);
 					}
+					//If our object cannot bounce we set the velocity to 0
 					else {
 						(*movableObjects[i]).velocity = glm::vec3(0.0f, 0.0f, 0.0f);
 					}
 				}
 			}
+			//Checking collisions with other movable objects
 			for (int j = i + 1; j < movableObjects.size(); j++) {
 				if ((*movableObjects[i]).CheckCollision(*movableObjects[j]) && (&*movableObjects[i]) != (&*movableObjects[j])) {
 					// This is to prevent 2 objects to enter each other
@@ -279,6 +288,7 @@ void movementLogic() {
 					(*movableObjects[i]).Collide(*movableObjects[j]);
 				}
 			}
+			//Apply gravity
 			if (gravity_enabled) {
 				(*movableObjects[i]).Gravity();
 			}

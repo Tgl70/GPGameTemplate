@@ -2,7 +2,7 @@
 
 // Definition for singly-linked list.
 void Maze::generate(vector<vector<int>>& map) {
-    //U unvisited, ' ' visited
+    //1 unvisited, 0 visited
     for (int i = 0; i < map.size(); ++i)
     {
         for (int j = 0; j < map[0].size(); ++j)
@@ -13,16 +13,6 @@ void Maze::generate(vector<vector<int>>& map) {
     _generate(map, 0, 0);
 }
 
-void Maze::showMaze(vector<vector<int>>& map) {
-    for (int i = 0; i < map.size(); ++i)
-    {
-        for (int j = 0; j < map[0].size(); ++j)
-        {
-            cout << map[i][j];
-        }
-        cout << endl;
-    }
-}
 //Use DFS 
 void Maze::_generate(vector<vector<int>>& map, int i, int j) {
     int direct[][2] = { {0,1}, {0,-1}, {-1,0}, {1,0} };
