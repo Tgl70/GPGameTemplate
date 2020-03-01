@@ -11,6 +11,7 @@
 #include <cmath>
 using namespace std;
 
+// class to represent the particle emitter objects
 class Emitter {
 public:
 	Emitter();
@@ -19,11 +20,11 @@ public:
 	void Init(Graphics graphics, glm::vec3 position);
 	void Draw();
 	void Refresh(Graphics graphics);
-	void Shoot(Graphics graphics);
-	Cube placeholder;
-	vector<Particle> particles;
+	void Shoot(Graphics graphics); // Function to shoot the particles
+	Cube placeholder; // The source of our particles
+	vector<Particle> particles; // Particles under the control of this emitter
 
 private:
-	int n_particles;
+	int n_particles; // number of particles under the control of this emitter
 };
 

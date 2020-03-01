@@ -2,16 +2,17 @@
 #include <time.h>
 
 const float PI = 3.1415927f;
-const float STARTING_OFFSET = 5.0f;
-const int BOID_SPACE = 3;
-const int OBSTACLES_SPACE = 8;
-const float TARGET_OFFSET = 3.0f;
-const int N_NEIGHBOURS = 3;
+const float STARTING_OFFSET = 5.0f; // starting point of the big cube containing the flock demo
+const int BOID_SPACE = 3; // lenght of boids' spawning parallelepiped
+const int OBSTACLES_SPACE = 8; // lenght of obstacles' spawning parallelepiped
+const float TARGET_OFFSET = 3.0f; // offset of the target with respect to the end of the obstacle space
+const int N_NEIGHBOURS = 3; // number of neighbours each boid should look at when adjusting his velocity
 
 FlockManager::FlockManager() {
 
 }
 
+// create all the elements used in the flock and make them not visible
 FlockManager::FlockManager(Graphics graphics, int flock_size, int obstacles_size) {
 	this->flock_size = flock_size;
 	this->obstacles_size = obstacles_size;
@@ -68,6 +69,8 @@ void FlockManager::Draw() {
 	}
 }
 
+// move all the elements to their position (randomly generated inside constraints) 
+//and make them visible and able to interact with the world (gravity and collisions)
 void FlockManager::GenerateFlock(Graphics graphics) {
 	srand((unsigned)(time(0)));
 	// Generate flock

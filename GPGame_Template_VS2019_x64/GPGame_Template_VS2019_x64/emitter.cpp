@@ -3,8 +3,8 @@
 
 const float PI = 3.1415927f;
 // (1.0, 200) for (0.3 dimension) -- (0.45, 100) for (0.8 dimension)
-const float MAGNITUDE = 0.3f;
-const float TTL = 200;
+const float MAGNITUDE = 0.3f; // Magnitude of the forces applied to the particles
+const float TTL = 200; // time to live (in frames) of the particles
 
 Emitter::Emitter() {
 
